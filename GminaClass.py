@@ -1,5 +1,6 @@
 # GLOWNA KLASA W MODELU - EMULUJE POPULACJE GMINY WRAZ Z Z AGENTAMI ICH STANAMI I POLACZENIAMI
 from random import sample
+import numpy as np
 
 
 class GminaClass:
@@ -12,13 +13,29 @@ class GminaClass:
     def define_voters_vec(self,size: int, cons_supp: float):
         n_conservatives = round(size*cons_supp)
         n_others = round(size - n_conservatives)
-        return [True] * n_conservatives + [False] * n_others
+        return np.asarray([True] * n_conservatives + [False] * n_others)
 
-    def __init__(self, teryt_code: str, population: int, conservatism_support: float, downscale_factor: int):
+    # def __init__(self, teryt_code: str, population: int, conservatism_support: float, downscale_factor: int = None):
+    #     self._teryt_ = teryt_code
+    #     self.factor = downscale_factor
+    #     self.n_agents = round(population/downscale_factor)
+    #     self.voters_states = self.define_voters_vec(size=self.n_agents, cons_supp=conservatism_support)
+
+
+    def __init__(self, teryt_code: str,  n_conservatists: int, n_others: int, downscale_factor: int):
         self._teryt_ = teryt_code
+        self.n_agents = n_conservatists+n_others
+        self.voters_states = np.asarray([True] * n_conservatists + [False] * n_others)
         self.factor = downscale_factor
-        self.n_agents = round(population/downscale_factor)
-        self.voters_states = self.define_voters_vec(size=self.n_agents, cons_supp=conservatism_support)
+
+    #konstruktor na podstawie pliku dumpowanego przez klase model
+    @classmethod
+    def from_textfile(cls, teryt_code: str, population: int, conservatism_support: float, downscale_factor: int):
+        n_agents = round(population/downscale_factor)
+        n_conservatives = round(n_agents * conservatism_support)
+        n_others = round(n_agents - n_conservatives)
+        return cls(teryt_code,n_conservatives,n_others,downscale_factor)
+
 
     def initialize_workplaces(self,df):
         # wybranie wierszy dotyczacych naszej gminy
@@ -35,7 +52,7 @@ class GminaClass:
         # wylosowanie ktorzy beda dojezdzali
         indexes = sample(range(self.n_agents),sum_commuters)
         # inicjalizacja wartoscia poczatkowa
-        self.working_gmina = ['S'] * self.n_agents
+        self.working_gmina = np.asarray(['S'] * self.n_agents, dtype='|S6')
 
         # zamiana pojedynczych wartosci
         i = 0
@@ -43,6 +60,21 @@ class GminaClass:
             for j in range(value):
                 self.working_gmina[indexes[i]] = idx
                 i = i+1
+
+
+
+    def __str__(self):
+        unique, counts = np.unique(self.voters_states, return_counts=True)
+        dd = dict(zip(unique, counts))
+        konserwa = dd[True]
+        return "Gmina: " + self._teryt_ +"\n" + "Number of agents: " + str(self.n_agents) + "\n" +\
+               "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
+               + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
+
+
+
+
+
 
 
 

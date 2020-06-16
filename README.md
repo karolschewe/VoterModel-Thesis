@@ -20,3 +20,10 @@ Each instance contains its TERYT code - which is official polish gmina ID.
 Moreover each GminaClass contains 2 vectors of Boolean values, first representing opinions of agents and the other 
 representing gminas ID where they commute to.
 
+
+To save actual state one should use function ModelClass.dump_actual_state(filename).
+The function will save actual state of the system to two files: filenameopinions.txt and filenameconnections.npz
+
+To retrieve the state from these files feed the files to the constructor of ModelClass using parameter recall_state=False.
+Example:
+model2005 = ModelClass("mymodelopinions.txt","mymodelconnections.npz" , recall_state=True)
