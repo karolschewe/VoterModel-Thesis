@@ -58,17 +58,6 @@ class ModelClass:
             temp[i._teryt_] = i.working_gmina
         np.savez_compressed(filename+"connections.npz", **temp)
 
-    def recall_state_from_file(self, filename):
-        with open(filename+"opinions.txt","r") as file:
-            downscale_factor = file.readline()
-            while True:
-                teryt = file.readline()
-                if not teryt:
-                    break
-                conservatives = file.readline()
-                others = file.readline()
-                self.gminas[teryt] = GminaClass(teryt,int(conservatives),int(others),int(downscale_factor))
-
 
 
 

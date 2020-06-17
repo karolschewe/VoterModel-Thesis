@@ -71,6 +71,9 @@ class GminaClass:
                "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
                + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
 
+    def gmina_timestep(self):
+        pass
+
 
 
 
