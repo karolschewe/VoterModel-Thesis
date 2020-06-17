@@ -11,7 +11,8 @@ class ModelClass:
     D = 1 # prawdopodobienstwo zmiany zdania
     gminas = {}
 
-    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", travellers_filename: str = "tabela_przeplywy2016_python.csv", recall_state =False):
+    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", travellers_filename: str = "tabela_przeplywy2016_python.csv", recall_state=False, D = 1, alfa =0.5):
+        # inicjalizacja z pliku zawierajacego stan poczatkowy
         if not recall_state:
             initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
             travellers = pd.read_csv(travellers_filename, dtype={'FROM': str, 'TO': str})
@@ -22,6 +23,7 @@ class ModelClass:
                                                                      downscale_factor=38)
                 self.gminas[row['TERYT']].initialize_workplaces(travellers)
         else:
+            # wczytywanie z sejwa
             with open(initial_state_filename, "r") as file:
                 downscale_factor = file.readline()
                 while True:
@@ -35,6 +37,8 @@ class ModelClass:
             temp = np.load(travellers_filename)
             for index, value in self.gminas.items():
                 value.working_gmina = temp[index]
+        self.D = D
+        self.alfa = alfa
 
 
 
@@ -65,36 +69,57 @@ class ModelClass:
             temp[i._teryt_] = true_val_first
         np.savez_compressed(filename+"connections.npz", **temp)
 
+    # funkcja wykonujaca synchroniczna symulacje dla jednej gminy
     def gmina_timestep(self, gminas_teryt: str):
+        #stworzenie kopii obiektu, aby poprzednie kontakty nie wplywaly symulacje w tym samym kroku
         temp = deepcopy(self.gminas[gminas_teryt])
+        # iteracja po wszystkich agentach
         for i in range(temp.n_agents):
+            # jezeli agent pracuje w tej samej gminie to mamy tylko mozliwowsc kontaktu w tej samej gminie
             if temp.working_gmina[i] == "S":
-                mate_index = sample(range(temp.n_agents), 1)
+                mate_index = sample(range(temp.n_agents), 1) #losujemy jeden indeks agenta z ktorym bedziemy wchodzic w interakcje
                 mate_opinion = temp.voters_states[mate_index]
                 if mate_opinion != temp.voters_states[i]:
-                    if random.random() < self.D:
+                    if random.random() < self.D: # zmiana opinii z prawdopodobienstwem D
                         temp.voters_states[i] = mate_opinion
             else:
-                TERYT_conn = temp.working_gmina[i]
-                mate_index = sample(range(self.gminas[TERYT_conn].n_agents), 1)
-                mate_opinion = self.gminas[TERYT_conn].voters_states[mate_index]
-                if mate_opinion != temp.voters_states[i]:
-                    if random.random() < self.D:
-                        temp.voters_states[i] = mate_opinion
+                if random.random() > self.alfa:
+                    TERYT_conn = temp.working_gmina[i] #wyciagam sobie teryt gminy polaczonej z agentem
+                    mate_index = sample(range(self.gminas[TERYT_conn].n_agents), 1)
+                    mate_opinion = self.gminas[TERYT_conn].voters_states[mate_index]
+                    if mate_opinion != temp.voters_states[i]:
+                        if random.random() < self.D:
+                            temp.voters_states[i] = mate_opinion
+                else: # z prawdopodobienstwem alfa agent wchodzi w interakcje z kontaktem ze swojej gminy
+                    mate_index = sample(range(temp.n_agents), 1)
+                    mate_opinion = temp.voters_states[mate_index]
+                    if mate_opinion != temp.voters_states[i]:
+                        if random.random() < self.D:
+                            temp.voters_states[i] = mate_opinion
+
 
         return temp
 
+    # funkcja wykonujaca symulacje synchronicznie na wszystkich gminach instancji model
+    # funkcja nadpisuje stan modelu dopiero po tym jak wszystkie gminy zostana obliczone
     def model_timestep_synchronous(self):
-        temp_gminas = {}
+        temp_gminas = {} # dzialamy na kopii
         for teryt in self.gminas.keys():
             temp_gminas[teryt] = self.gmina_timestep(teryt)
 
-        self.gminas = temp_gminas
+        self.gminas = temp_gminas #nadpisujemy stan modelu
 
+    # funkcja wykonujaca symulacje czesciowo asynchronicznie na wszystkich gminach instancji model
+    # funkcja nadpisuje stan modelu co kazde wykonanie funkcji gmina_timestep(teryt)
+    # w rzeczywistosci oznacza to ze obliczenia wewnatrz gminy wykonuja sie synchronicznie, ale po obliczeniu jednej gminy stan modelu jest zapisywany
+    # i wyedytowana gmina jest wykorzystywana w obliczeniach dla pozostalych gmin
     def model_timestep_nonsynchronous(self):
         for teryt in self.gminas.keys():
             tmp = self.gmina_timestep(teryt)
             self.gminas[teryt] = tmp
+
+    def set_D(self,probability_of_opinion_change: float = 1):
+        self.D = probability_of_opinion_change
 
 
 
