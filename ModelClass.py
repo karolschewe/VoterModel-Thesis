@@ -1,8 +1,14 @@
+import random
+from random import sample
+
 from GminaClass import GminaClass
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 
 class ModelClass:
+    alfa = 0.5 # prawdopodobienstwo wybrania agenta z wlasnej gminy do interakcji w danym kroku
+    D = 1 # prawdopodobienstwo zmiany zdania
     gminas = {}
 
     def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", travellers_filename: str = "tabela_przeplywy2016_python.csv", recall_state =False):
@@ -58,6 +64,43 @@ class ModelClass:
             true_val_first = np.concatenate((i.working_gmina[np.where(i.voters_states == True)], i.working_gmina[np.where(i.voters_states == False)]), axis=None)
             temp[i._teryt_] = true_val_first
         np.savez_compressed(filename+"connections.npz", **temp)
+
+    def gmina_timestep(self, gminas_teryt: str):
+        temp = deepcopy(self.gminas[gminas_teryt])
+        for i in range(temp.n_agents):
+            if temp.working_gmina[i] == "S":
+                mate_index = sample(range(temp.n_agents), 1)
+                mate_opinion = temp.voters_states[mate_index]
+                if mate_opinion != temp.voters_states[i]:
+                    if random.random() < self.D:
+                        temp.voters_states[i] = mate_opinion
+            else:
+                TERYT_conn = temp.working_gmina[i]
+                mate_index = sample(range(self.gminas[TERYT_conn].n_agents), 1)
+                mate_opinion = self.gminas[TERYT_conn].voters_states[mate_index]
+                if mate_opinion != temp.voters_states[i]:
+                    if random.random() < self.D:
+                        temp.voters_states[i] = mate_opinion
+
+        return temp
+
+    def model_timestep_synchronous(self):
+        temp_gminas = {}
+        for teryt in self.gminas.keys():
+            temp_gminas[teryt] = self.gmina_timestep(teryt)
+
+        self.gminas = temp_gminas
+
+    def model_timestep_nonsynchronous(self):
+        for teryt in self.gminas.keys():
+            tmp = self.gmina_timestep(teryt)
+            self.gminas[teryt] = tmp
+
+
+
+
+
+
 
 
 

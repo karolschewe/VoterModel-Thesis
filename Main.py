@@ -12,5 +12,18 @@ model2005_test = ModelClass("exampleopinions.txt","exampleconnections.npz" , rec
 end = time.time()
 print(end - start)
 
-print(model2005.gminas["020202"])
+# print(model2005.gminas["020202"])
 print(model2005_test.gminas["020202"])
+start = time.time()
+model2005.model_timestep_nonsynchronous()
+print(model2005.gminas["020202"])
+model2005.model_timestep_nonsynchronous()
+print(model2005.gminas["020202"])
+model2005.model_timestep_nonsynchronous()
+print(model2005.gminas["020202"])
+model2005.model_timestep_nonsynchronous()
+print(model2005.gminas["020202"])
+end = time.time()
+print(end - start)
+
+

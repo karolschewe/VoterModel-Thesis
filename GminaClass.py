@@ -52,7 +52,7 @@ class GminaClass:
         # wylosowanie ktorzy beda dojezdzali
         indexes = sample(range(self.n_agents),sum_commuters)
         # inicjalizacja wartoscia poczatkowa
-        self.working_gmina = np.asarray(['S'] * self.n_agents, dtype='|S6')
+        self.working_gmina = np.asarray(['S'] * self.n_agents, dtype='|U6')
 
         # zamiana pojedynczych wartosci
         i = 0
@@ -69,10 +69,15 @@ class GminaClass:
         konserwa = dd[True]
         return "Gmina: " + self._teryt_ +"\n" + "Number of agents: " + str(self.n_agents) + "\n" +\
                "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
-               + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
+               # + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
 
-    def gmina_timestep(self):
-        pass
+
+
+
+
+
+
+
 
 
 

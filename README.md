@@ -32,6 +32,10 @@ model2005 = ModelClass("mymodelopinions.txt","mymodelconnections.npz" , recall_s
 
 
 
-Fuction GminaClass.gmina_timestep() - is responsible for conducting simulation for whole gmina.
+Fuction ModelClass.gmina_timestep(TERYT_CODE) - is responsible for conducting synchronous simulation for whole gmina of given teryt code.
 Each agent is has its interaction executed with randomly chosen other agent.  
 Function returns new GminaClass object, rather than working on the instance itself.
+
+To simulate every gmina in the model one should use ModelClass.model_timestep_synchronous() for synchronous simulation. (Working od class instance copy.)
+In the other hand there is ModelClass.model_timestep_nonsynchronous() function which performs partially synchronous simulation. 
+This function runs gmina_timestep() function and saves its outcomes instantly to ModelClass instance. This means that on the gmina level the simulation is synchronous, but then gmina is overwritten and another gminas use newly calculated values of that gmina.
