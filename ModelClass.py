@@ -55,7 +55,8 @@ class ModelClass:
 
         temp = {}
         for i in self.gminas.values():
-            temp[i._teryt_] = i.working_gmina
+            true_val_first = np.concatenate((i.working_gmina[np.where(i.voters_states == True)], i.working_gmina[np.where(i.voters_states == False)]), axis=None)
+            temp[i._teryt_] = true_val_first
         np.savez_compressed(filename+"connections.npz", **temp)
 
 

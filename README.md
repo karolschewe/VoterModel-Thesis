@@ -27,3 +27,11 @@ The function will save actual state of the system to two files: filenameopinions
 To retrieve the state from these files feed the files to the constructor of ModelClass using parameter recall_state=False.
 Example:
 model2005 = ModelClass("mymodelopinions.txt","mymodelconnections.npz" , recall_state=True)
+
+
+
+
+
+Fuction GminaClass.gmina_timestep() - is responsible for conducting simulation for whole gmina.
+Each agent is has its interaction executed with randomly chosen other agent.  
+Function returns new GminaClass object, rather than working on the instance itself.
