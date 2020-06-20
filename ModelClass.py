@@ -1,6 +1,6 @@
 import random
 from random import sample
-
+from statistics import stdev
 from GminaClass import GminaClass
 import pandas as pd
 import numpy as np
@@ -120,6 +120,18 @@ class ModelClass:
 
     def set_D(self,probability_of_opinion_change: float = 1):
         self.D = probability_of_opinion_change
+
+    def get_support(self):
+        tmp_support = []
+        for i in self.gminas.values():
+            tmp_support.append(i.get_n_conservatves() / i.n_agents)
+        return tmp_support
+
+    def get_sd(self):
+        tmp_support = self.get_support()
+        sd = stdev(tmp_support)
+        print("Odchylenie standardowe rozkladu poparc gmin:"+str(sd))
+        return sd
 
 
 

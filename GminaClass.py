@@ -61,12 +61,17 @@ class GminaClass:
                 self.working_gmina[indexes[i]] = idx
                 i = i+1
 
-
-
-    def __str__(self):
+    def get_n_conservatves(self):
         unique, counts = np.unique(self.voters_states, return_counts=True)
         dd = dict(zip(unique, counts))
-        konserwa = dd[True]
+        if True in dd.keys():
+            konserwa = dd[True]
+        else:
+            konserwa = 0
+        return konserwa
+
+    def __str__(self):
+        konserwa = self.get_n_conservatves()
         return "Gmina: " + self._teryt_ +"\n" + "Number of agents: " + str(self.n_agents) + "\n" +\
                "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
                # + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
