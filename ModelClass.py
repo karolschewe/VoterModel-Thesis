@@ -75,27 +75,27 @@ class ModelClass:
         temp = deepcopy(self.gminas[gminas_teryt])
         # iteracja po wszystkich agentach
         for i in range(temp.n_agents):
+
+            if random.random() < self.D:
+                temp.voters_states[i] = not temp.voters_states[i]
             # jezeli agent pracuje w tej samej gminie to mamy tylko mozliwowsc kontaktu w tej samej gminie
             if temp.working_gmina[i] == "S":
                 mate_index = sample(range(temp.n_agents), 1) #losujemy jeden indeks agenta z ktorym bedziemy wchodzic w interakcje
                 mate_opinion = temp.voters_states[mate_index]
                 if mate_opinion != temp.voters_states[i]:
-                    if random.random() < self.D: # zmiana opinii z prawdopodobienstwem D
-                        temp.voters_states[i] = mate_opinion
+                    temp.voters_states[i] = mate_opinion
             else:
                 if random.random() > self.alfa:
                     TERYT_conn = temp.working_gmina[i] #wyciagam sobie teryt gminy polaczonej z agentem
                     mate_index = sample(range(self.gminas[TERYT_conn].n_agents), 1)
                     mate_opinion = self.gminas[TERYT_conn].voters_states[mate_index]
                     if mate_opinion != temp.voters_states[i]:
-                        if random.random() < self.D:
-                            temp.voters_states[i] = mate_opinion
+                        temp.voters_states[i] = mate_opinion
                 else: # z prawdopodobienstwem alfa agent wchodzi w interakcje z kontaktem ze swojej gminy
                     mate_index = sample(range(temp.n_agents), 1)
                     mate_opinion = temp.voters_states[mate_index]
                     if mate_opinion != temp.voters_states[i]:
-                        if random.random() < self.D:
-                            temp.voters_states[i] = mate_opinion
+                        temp.voters_states[i] = mate_opinion
 
 
         return temp
