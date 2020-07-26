@@ -19,7 +19,7 @@ processFile = function(filepath) {
 
 # par(mfrow=c(3,3))
 par(mfrow=c(1,2))
-seqq<- 0.01
+seqq<- 0.02
 for(i in seqq )
 {
   first.timeseries<-processFile(paste0("opinions_",i,".txt"))
