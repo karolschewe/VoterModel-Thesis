@@ -9,12 +9,30 @@ from copy import deepcopy
 class ModelClass:
     alfa = 0.5 # prawdopodobienstwo wybrania agenta z wlasnej gminy do interakcji w danym kroku
     D = 1 # prawdopodobienstwo losowej zmiany zdania
+    downscale_factor = 38
     gminas = {}
     agents = []
 
-    def populate_agents(self,gmina,commuters): # this function is intended to run only inside ModelClass constructor AFTER gimna class initialisation
-        for idx, row in commuters.iterrows():
-            pass # TODO: agents creation, intialisation of GminaClass' vectors of workers and residents indices, timestep of simulation
+    def populate_agents(self,travellers_df_filename = "tabela_przeplywy2016_python.csv"): # this function is intended to run only inside ModelClass constructor AFTER gimna class initialisation
+        commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
+        assigned_agents = 0
+        for i in self.gminas.values():
+            where_to = commuters.loc[commuters['FROM'] == i.id] # wybieram wiersze dla i-tej gminy
+            vector_of_workplaces = []
+            for idx, row in where_to.iterrows():
+                how_many_bois = round(row['n'] / self.downscale_factor) # ile ziomkow po przeskalowaniu bedzie pracowac w innych gminach
+                to = [row['TO']]
+                vector_of_workplaces.extend(to * how_many_bois) # append numerow gmin do wektora
+            how_many_more = i.n_agents - len(vector_of_workplaces)
+            vector_of_workplaces.extend([i.id] * how_many_more) # "dopelniam" reszte agentow do wektora
+            vector_of_workplaces = sample(vector_of_workplaces,i.n_agents)
+            vector_of_opinions = sample(i.conservatists * [True] + (i.n_agents - i.conservatists) * [False],i.n_agents) #losowo przydzielam opinie
+            for iterator in range(len(vector_of_workplaces)):
+                assigned_agents = assigned_agents + 1
+                self.agents.append(vector_of_opinions[iterator])
+                i.residents_indices.append(assigned_agents)
+                self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
+        # pass # TODO: agents creation, intialisation of GminaClass' vectors of workers and residents indices, timestep of simulation
 
     #         nn = round(row['n']/self.factor)
     #         sum_commuters = sum_commuters + nn
@@ -30,12 +48,10 @@ class ModelClass:
             self.gminas[row['TERYT']] = GminaClass(teryt_code=row['TERYT'],
                                                                  population=row['POPULACJA'],
                                                                  conservatism_support=row['APPROX_PERCENTAGE'],
-                                                                 downscale_factor=38)
+                                                                 downscale_factor=self.downscale_factor)
             travellers = pd.read_csv("tabela_przeplywy2016_python.csv", dtype={'FROM': str, 'TO': str})
             our_gmina = travellers['FROM'] == row['TERYT']
 
-            where_to = travellers[our_gmina]
-            self.gminas[row['TERYT']].initialize_workplaces(travellers)
         self.D = D
         self.alfa = alfa
 

@@ -22,10 +22,14 @@ class GminaClass:
     #     self.voters_states = self.define_voters_vec(size=self.n_agents, cons_supp=conservatism_support)
 
 
-    def __init__(self, teryt_code: str,  population: int, conservatism_support: int, downscale_factor: int):
+    def __init__(self, teryt_code: str,  population: int, conservatism_support: float, downscale_factor: int):
         self._teryt_ = teryt_code
         self.n_agents = round(population/downscale_factor)
         self.conservatists = round(conservatism_support*self.n_agents)
+
+    @property
+    def id(self):
+        return self._teryt_
 
     #konstruktor na podstawie pliku dumpowanego przez klase model
     # @classmethod
@@ -69,11 +73,11 @@ class GminaClass:
     #         konserwa = 0
     #     return konserwa
 
-    # def __str__(self):
-    #     konserwa = self.get_n_conservatves()
-    #     return "Gmina: " + self._teryt_ +"\n" + "Number of agents: " + str(self.n_agents) + "\n" +\
-    #            "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
-    #            # + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
+    def __str__(self):
+        konserwa = self.conservatists
+        return "Gmina: " + self._teryt_ +"\n" + "Number of agents: " + str(self.n_agents) + "\n" +\
+               "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
+               # + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
 
 
 
