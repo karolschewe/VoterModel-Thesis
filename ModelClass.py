@@ -6,6 +6,10 @@ import pandas as pd
 import numpy as np
 from copy import deepcopy
 
+# zrobic dotychczasowe symulacje
+# zrobic sprawdzenie wariancji od skali zmniejszenia
+
+
 class ModelClass:
     alfa = 0.5 # prawdopodobienstwo wybrania agenta z wlasnej gminy do interakcji w danym kroku
     D = 1 # prawdopodobienstwo losowej zmiany zdania
