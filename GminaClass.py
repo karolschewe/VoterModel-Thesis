@@ -4,9 +4,6 @@ import numpy as np
 
 
 class GminaClass:
-    _teryt_ = ""
-    residents_indices = [] # wektor indeksow mieszkancow gminy
-    workers_indices = [] # wektor indeksow osob pracujacych w gminie
 
     # funkcja definiujaca wektor glosujacych
 
@@ -26,6 +23,8 @@ class GminaClass:
         self._teryt_ = teryt_code
         self.n_agents = round(population/downscale_factor)
         self.conservatists = round(conservatism_support*self.n_agents)
+        self.residents_indices = []
+        self.workers_indices = []
 
     @property
     def id(self):
@@ -76,8 +75,8 @@ class GminaClass:
     def __str__(self):
         konserwa = self.conservatists
         return "Gmina: " + self._teryt_ +"\n" + "Number of agents: " + str(self.n_agents) + "\n" +\
-               "Number of conservatives: " + str(konserwa) + "\n" + "Agents states: \n" \
-               # + str(self.voters_states) + "\n Agents connections: \n" + str(self.working_gmina)
+               "Number of conservatives: " + str(konserwa) + "\n" + "Number of people who work here: " +\
+               str(len(self.workers_indices)) + "\n" + "Gmina population: " + str(len(self.residents_indices))
 
 
 

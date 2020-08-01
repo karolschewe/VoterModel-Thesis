@@ -18,7 +18,7 @@ processFile = function(filepath) {
 # seqq<-seq(0.01,0.11,by = 0.01)
 
 # par(mfrow=c(3,3))
-par(mfrow=c(1,2))
+par(mfrow=c(1,3))
 seqq<- 0.02
 for(i in seqq )
 {
@@ -32,6 +32,14 @@ for(i in seqq)
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("std. deviation in time D = ", i), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
 }
+for(i in seqq)
+{
+  first.timeseries<-processFile(paste0("means_",i,".txt"))
+  # print(first.timeseries)
+  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
+}
+
+
 
 
 

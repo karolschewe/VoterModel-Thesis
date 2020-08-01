@@ -4,7 +4,7 @@ from statistics import stdev
 from GminaClass import GminaClass
 import pandas as pd
 import numpy as np
-from copy import deepcopy
+from statistics import mean
 
 # zrobic dotychczasowe symulacje
 # zrobic sprawdzenie wariancji od skali zmniejszenia
@@ -32,33 +32,41 @@ class ModelClass:
             vector_of_workplaces = sample(vector_of_workplaces,i.n_agents)
             vector_of_opinions = sample(i.conservatists * [True] + (i.n_agents - i.conservatists) * [False],i.n_agents) #losowo przydzielam opinie
             for iterator in range(len(vector_of_workplaces)):
-                assigned_agents = assigned_agents + 1
                 self.agents.append(vector_of_opinions[iterator])
                 i.residents_indices.append(assigned_agents)
                 self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
-        # pass # TODO: agents creation, intialisation of GminaClass' vectors of workers and residents indices, timestep of simulation
+                assigned_agents = assigned_agents + 1
 
-    #         nn = round(row['n']/self.factor)
-    #         sum_commuters = sum_commuters + nn
-    #         how_many_commuters[row['TO']] = nn # indeks w slowniku jest oznaczeniem gminy przyjazdu, wartosc oznacza liczbe agentow
-
-
-    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", travellers_filename: str = "tabela_przeplywy2016_python.csv", D = 1, alfa =0.5):
+    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5):
         # inicjalizacja z pliku zawierajacego stan poczatkowy
 
         initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
-        travellers = pd.read_csv(travellers_filename, dtype={'FROM': str, 'TO': str})
         for idx, row in initial_state.iterrows():
             self.gminas[row['TERYT']] = GminaClass(teryt_code=row['TERYT'],
                                                                  population=row['POPULACJA'],
                                                                  conservatism_support=row['APPROX_PERCENTAGE'],
                                                                  downscale_factor=self.downscale_factor)
-            travellers = pd.read_csv("tabela_przeplywy2016_python.csv", dtype={'FROM': str, 'TO': str})
-            our_gmina = travellers['FROM'] == row['TERYT']
+
 
         self.D = D
         self.alfa = alfa
 
+    # krok modelu ansynchronicznie
+    # tzn. Opinie agentow nadpisywane sa w trakcie (nie pracujemy na kopii obiektu)
+    def model_timestep(self):
+        for i in self.gminas.values(): #iteracja po gminach
+            i.conservatists = 0
+            for habitant in i.residents_indices:
+                if random.random() < self.D:
+                    self.agents[habitant] = not self.agents[habitant]
+                if random.random() < self.alfa:  # interacja z mieszkancami
+                    who_is_contacted = sample(i.residents_indices, 1)[0]
+                    self.agents[habitant] = self.agents[who_is_contacted]
+                else:  # interakcja w pracy
+                    who_is_contacted = sample(i.workers_indices, 1)[0]
+                    self.agents[habitant] = self.agents[who_is_contacted]
+                if self.agents[habitant]:
+                    i.conservatists = i.conservatists+1
 
 
 
@@ -137,14 +145,10 @@ class ModelClass:
     #         tmp = self.gmina_timestep(teryt)
     #         self.gminas[teryt] = tmp
     #
-    # def set_D(self,probability_of_opinion_change: float = 1):
-    #     self.D = probability_of_opinion_change
-    #
-    # def get_support(self):
-    #     tmp_support = []
-    #     for i in self.gminas.values():
-    #         tmp_support.append(i.get_n_conservatves() / i.n_agents)
-    #     return tmp_support
+    def set_D(self,probability_of_opinion_change: float = 1):
+        self.D = probability_of_opinion_change
+
+
     #
     # def get_sd(self):
     #     tmp_support = self.get_support()
@@ -153,6 +157,27 @@ class ModelClass:
     #     return sd
     #
     #
+    @property
+    def conservatism_in_gminas(self):
+        tmp_support = []
+        for i in self.gminas.values():
+            tmp_support.append(i.conservatists / i.n_agents)
+        return tmp_support
+    @property
+    def mean_conservatism_in_gminas(self):
+        return mean(self.conservatism_in_gminas)
+    @property
+    def overall_conservatism_support(self):
+        mn = sum(self.agents)/len(self.agents)
+        print("Konserwatyzm w Polsce popiera " + str(round(mn*100,2)) + "% osob")
+        return mn
+    @property
+    def std_dev(self):
+        sd = stdev(self.conservatism_in_gminas)
+        print("Odchylenie standardowe rozkladu poparc gmin:" + str(sd))
+        return sd
+    def __str__(self):
+        return "Number of conservatists: " + str(sum(self.agents))
 
 
 
