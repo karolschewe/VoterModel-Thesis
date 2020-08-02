@@ -37,7 +37,7 @@ class ModelClass:
                 self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
                 assigned_agents = assigned_agents + 1
 
-    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5):
+    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5,downscale_factor = 38):
         # inicjalizacja z pliku zawierajacego stan poczatkowy
 
         initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
@@ -50,6 +50,7 @@ class ModelClass:
 
         self.D = D
         self.alfa = alfa
+        self.downscale_factor = downscale_factor
 
     # krok modelu ansynchronicznie
     # tzn. Opinie agentow nadpisywane sa w trakcie (nie pracujemy na kopii obiektu)

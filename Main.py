@@ -7,7 +7,7 @@ import time
 
 d_value = 0.02
 start = time.time()
-winogronko = ModelClass(D=d_value)
+winogronko = ModelClass(D=d_value,)
 winogronko.populate_agents()
 stop = time.time()
 print("inicjalizacja:")
