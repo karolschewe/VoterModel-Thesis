@@ -43,4 +43,4 @@ for(i in seqq)
 }
 
 
-
+# przetestowac 

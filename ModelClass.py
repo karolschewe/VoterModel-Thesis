@@ -68,8 +68,12 @@ class ModelClass:
                     self.agents[habitant] = self.agents[who_is_contacted]
                 if self.agents[habitant]:
                     i.conservatists = i.conservatists+1
-
-
+#TODO: wektor miejsc zamieszkania agentow wewnatrz modelu aby dodac losowanie kolejnosci agentow
+#TODO: zrobic symulacje dla D = 0
+#TODO: zrobic graf z oznaczonymi opiniami
+#TODO: sprawdzic czy na pewno jest dobrze program
+#TODO: histogram roznic pomiedzy kazda para polaczonych gmin
+#TODO:
 
     # aktualny stan modelu wyrzucany jest do 2 plikow
     # pierwszy plik -- zawiera stany agentow w formacie: TERYT \n liczba konserwatystów \n liczba pozostalych
