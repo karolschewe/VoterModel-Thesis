@@ -14,28 +14,22 @@ b) anticonservatism - represented with False
 5. Based on statistical data, a portion of people that commute to work to other gminas have also connection to agents inside the gmina they commute to.
 6. Connected agents can exchange their political opinion with probability p in each step.
 
-
-GminaClass is the main class of the project. It represents the metapopulation within a Gmina.
-Each instance contains its TERYT code - which is official polish gmina ID.
+ModelClass is the main class of the project. It represents whole state of a simulation. Within this object a vector of opinions of every agent is contained.
+Moreover it contains a dictionary of GminaClass objects.
+Gmina class represents a gmina within Poland. It contains a vector of indices of gmina residents as well as a vector of people that work inside Gmina.
+Aoart from that GminaClass instance contains its TERYT code - which is official polish gmina ID.
 Moreover each GminaClass contains 2 vectors of Boolean values, first representing opinions of agents and the other 
 representing gminas ID where they commute to.
 
+How to run a simulation:
+1. Create an instance of ModelClass. Constructor requires user to provide a file with gmina's populations with the
+ format presented in the file "gminas_pops_python2005.csv" which is appended to this git project and is a default input file. 
+ Apart from that, it is possible to define level of noise (parameter D of range from 0 to 1), 
+ probability of interaction at home, rather than with coworkers (parameter alfa) and downscale factor (the number by which the population of each gmina is divided).
+2. Next we have to create population of agents and initialise their connections using populate_agents() method.
+The methond has to be fed a file in the format presented in "tabela_przeplywy2016_python.csv" which is appended to this project and is a default input file.
+3. Use method model_timestep() to carry out one timestep of the simulation.
 
-To save actual state one should use function ModelClass.dump_actual_state(filename).
-The function will save actual state of the system to two files: filenameopinions.txt and filenameconnections.npz
-
-To retrieve the state from these files feed the files to the constructor of ModelClass using parameter recall_state=False.
-Example:
-model2005 = ModelClass("mymodelopinions.txt","mymodelconnections.npz" , recall_state=True)
+ModelClass.model_timestep() performs an asynchronous timestep which means that during simulation agents states are directly overriten in ModelClass object after interaction. 
 
 
-
-
-
-Fuction ModelClass.gmina_timestep(TERYT_CODE) - is responsible for conducting synchronous simulation for whole gmina of given teryt code.
-Each agent is has its interaction executed with randomly chosen other agent.  
-Function returns new GminaClass object, rather than working on the instance itself.
-
-To simulate every gmina in the model one should use ModelClass.model_timestep_synchronous() for synchronous simulation. (Working od class instance copy.)
-In the other hand there is ModelClass.model_timestep_nonsynchronous() function which performs partially synchronous simulation. 
-This function runs gmina_timestep() function and saves its outcomes instantly to ModelClass instance. This means that on the gmina level the simulation is synchronous, but then gmina is overwritten and another gminas use newly calculated values of that gmina.

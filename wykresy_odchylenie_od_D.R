@@ -20,26 +20,27 @@ processFile = function(filepath) {
 # par(mfrow=c(3,3))
 par(mfrow=c(1,3))
 seqq<- 0.02
+d_factor<-38
 for(i in seqq )
 {
-  first.timeseries<-processFile(paste0("opinions_",i,".txt"))
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/opinions_",i,".txt"))
   # print(first.timeseries)
-  hist(first.timeseries, main = paste0("opinions in model D = ", i),breaks = 25, xlab = 'CONSERVATISM SUPPORT')
+  hist(first.timeseries, main = paste0("opinions in model D = ", i,"\n factor = ", d_factor),breaks = 25, xlab = 'CONSERVATISM SUPPORT')
 }
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("d_",i,"_sdev.txt"))
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/d_",i,"_sdev.txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("std. deviation in time D = ", i), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
+  plot(first.timeseries, main = paste0("std. deviation in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
 }
+
+
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("means_",i,".txt"))
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/mean_overall_",i,".txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
+  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
 }
-
-
 
 
 
