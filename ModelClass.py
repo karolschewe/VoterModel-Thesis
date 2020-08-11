@@ -5,6 +5,7 @@ from GminaClass import GminaClass
 import pandas as pd
 import numpy as np
 from statistics import mean
+from AgentClass import Agent
 
 # zrobic dotychczasowe symulacje
 # zrobic sprawdzenie wariancji od skali zmniejszenia
@@ -15,7 +16,7 @@ class ModelClass:
     D = 1 # prawdopodobienstwo losowej zmiany zdania
     downscale_factor = 38
     gminas = {}
-    agents = []
+    agents = [] # obiektow klasy agent zawierajacych miejsce opinie, miejsce zamieszkania i miejsce pracy
 
     def populate_agents(self,travellers_df_filename = "tabela_przeplywy2016_python.csv"): # this function is intended to run only inside ModelClass constructor AFTER gimna class initialisation
         commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
@@ -32,7 +33,7 @@ class ModelClass:
             vector_of_workplaces = sample(vector_of_workplaces,i.n_agents)
             vector_of_opinions = sample(i.conservatists * [True] + (i.n_agents - i.conservatists) * [False],i.n_agents) #losowo przydzielam opinie
             for iterator in range(len(vector_of_workplaces)):
-                self.agents.append(vector_of_opinions[iterator])
+                self.agents.append(Agent(vector_of_opinions[iterator], i.id, vector_of_workplaces[iterator]))
                 i.residents_indices.append(assigned_agents)
                 self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
                 assigned_agents = assigned_agents + 1
@@ -55,20 +56,33 @@ class ModelClass:
     # krok modelu ansynchronicznie
     # tzn. Opinie agentow nadpisywane sa w trakcie (nie pracujemy na kopii obiektu)
     def model_timestep(self):
-        for i in self.gminas.values(): #iteracja po gminach
-            i.conservatists = 0
-            for habitant in i.residents_indices:
-                if random.random() < self.D:
-                    self.agents[habitant] = not self.agents[habitant]
-                if random.random() < self.alfa:  # interacja z mieszkancami
-                    who_is_contacted = sample(i.residents_indices, 1)[0]
-                    self.agents[habitant] = self.agents[who_is_contacted]
-                else:  # interakcja w pracy
-                    who_is_contacted = sample(i.workers_indices, 1)[0]
-                    self.agents[habitant] = self.agents[who_is_contacted]
-                if self.agents[habitant]:
-                    i.conservatists = i.conservatists+1
-#TODO: wektor miejsc zamieszkania agentow wewnatrz modelu aby dodac losowanie kolejnosci agentow
+        how_many_agents = len(self.agents)
+        random_iterators = list(range(how_many_agents))
+        for i in random_iterators:
+            old_opinion = self.agents[i].opinion
+            if random.random() < self.D:
+                if random.random() < 0.5:
+                    self.agents[i].opinion = False
+                else:
+                    self.agents[i].opinion = True
+            if random.random() < self.alfa:  # interacja z mieszkancami
+                who_is_contacted = sample(self.gminas[self.agents[i].homeplace].residents_indices, 1)[0]
+                self.agents[i].opinion = self.agents[who_is_contacted].opinion
+            else: # interakcja z pracowinikami
+                who_is_contacted = sample(self.gminas[self.agents[i].workplace].workers_indices, 1)[0]
+                self.agents[i].opinion = self.agents[who_is_contacted].opinion
+            # aktualizacja liczby konserwatystow
+            if old_opinion != self.agents[i].opinion:
+                if self.agents[i].opinion:
+                    self.gminas[self.agents[i].homeplace].conservatists += 1
+                else:
+                    self.gminas[self.agents[i].homeplace].conservatists -= 1
+
+
+
+
+
+
 #TODO: zrobic symulacje dla D = 0
 #TODO: zrobic graf z oznaczonymi opiniami
 #TODO: sprawdzic czy na pewno jest dobrze program
