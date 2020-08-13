@@ -53,13 +53,19 @@ class ModelClass:
         self.alfa = alfa
         self.downscale_factor = downscale_factor
 
+    def recalculate_conservatism(self):
+        for i in self.gminas.values():
+            i.conservatists = 0
+            for j in i.residents_indices:
+                if self.agents[j].opinion:
+                    i.conservatists += 1
+
     # krok modelu ansynchronicznie
     # tzn. Opinie agentow nadpisywane sa w trakcie (nie pracujemy na kopii obiektu)
     def model_timestep(self):
         how_many_agents = len(self.agents)
         random_iterators = list(range(how_many_agents))
         for i in random_iterators:
-            old_opinion = self.agents[i].opinion
             if random.random() < self.D:
                 if random.random() < 0.5:
                     self.agents[i].opinion = False
@@ -71,12 +77,9 @@ class ModelClass:
             else: # interakcja z pracowinikami
                 who_is_contacted = sample(self.gminas[self.agents[i].workplace].workers_indices, 1)[0]
                 self.agents[i].opinion = self.agents[who_is_contacted].opinion
-            # aktualizacja liczby konserwatystow
-            if old_opinion != self.agents[i].opinion:
-                if self.agents[i].opinion:
-                    self.gminas[self.agents[i].homeplace].conservatists += 1
-                else:
-                    self.gminas[self.agents[i].homeplace].conservatists -= 1
+        self.recalculate_conservatism()
+
+
 
 
 
@@ -186,8 +189,15 @@ class ModelClass:
     def mean_conservatism_in_gminas(self):
         return mean(self.conservatism_in_gminas)
     @property
+    def no_of_conservatists(self):
+        conservatists = 0
+        for i in self.agents:
+            if i.opinion:
+                conservatists += 1
+        return conservatists
+    @property
     def overall_conservatism_support(self):
-        mn = sum(self.agents)/len(self.agents)
+        mn = self.no_of_conservatists/len(self.agents)
         print("Konserwatyzm w Polsce popiera " + str(round(mn*100,2)) + "% osob")
         return mn
     @property
@@ -196,7 +206,7 @@ class ModelClass:
         print("Odchylenie standardowe rozkladu poparc gmin:" + str(sd))
         return sd
     def __str__(self):
-        return "Number of conservatists: " + str(sum(self.agents))
+        return "Number of conservatists: " + self.no_of_conservatists
 
 
 

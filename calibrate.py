@@ -4,10 +4,10 @@ import os
 from pathlib import Path
 
 cwd = os.getcwd()
-d_values = [0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25]
-downscale_factors = [100,50,38]
+d_values = [0,0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25]
+downscale_factors = [38,50,100]
 liczba_iteracji = 133
-
+# d_values = [0.01]
 
 for i in d_values:
     for j in downscale_factors:
@@ -30,6 +30,8 @@ for i in d_values:
             srednie_na_poziomie_gminy.append(model.mean_conservatism_in_gminas)
 
         rozklad_poparc_w_gminach = model.conservatism_in_gminas
+
+
         file_out = open(directory + '\d_' + str(i) + '_sdev.txt', 'w')
         print(odchylenia, file=file_out)
         file_out2 = open(directory+'\opinions_' + str(i) + '.txt', 'w')
