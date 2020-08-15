@@ -18,8 +18,8 @@ processFile = function(filepath) {
 # seqq<-seq(0.01,0.11,by = 0.01)
 
 # par(mfrow=c(3,3))
-par(mfrow=c(1,3))
-seqq<- 0.01
+par(mfrow=c(2,2))
+seqq<- 0.25
 d_factor<-38
 for(i in seqq )
 {
@@ -42,5 +42,12 @@ for(i in seqq)
   plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
 }
 
+
+for(i in seqq)
+{
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/means_",i,".txt"))
+  # print(first.timeseries)
+  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n on gmina level factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
+}
 
 # przetestowac 

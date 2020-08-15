@@ -14,9 +14,9 @@ from AgentClass import Agent
 class ModelClass:
     alfa = 0.5 # prawdopodobienstwo wybrania agenta z wlasnej gminy do interakcji w danym kroku
     D = 1 # prawdopodobienstwo losowej zmiany zdania
-    downscale_factor = 38
-    gminas = {}
-    agents = [] # obiektow klasy agent zawierajacych miejsce opinie, miejsce zamieszkania i miejsce pracy
+    # downscale_factor = 38
+    # gminas = {}
+    # agents = [] # obiektow klasy agent zawierajacych miejsce opinie, miejsce zamieszkania i miejsce pracy
 
     def populate_agents(self,travellers_df_filename = "tabela_przeplywy2016_python.csv"): # this function is intended to run only inside ModelClass constructor AFTER gimna class initialisation
         commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
@@ -42,16 +42,16 @@ class ModelClass:
         # inicjalizacja z pliku zawierajacego stan poczatkowy
 
         initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
+        self.D = D
+        self.alfa = alfa
+        self.downscale_factor = downscale_factor
+        self.agents = []
+        self.gminas = {}
         for idx, row in initial_state.iterrows():
             self.gminas[row['TERYT']] = GminaClass(teryt_code=row['TERYT'],
                                                                  population=row['POPULACJA'],
                                                                  conservatism_support=row['APPROX_PERCENTAGE'],
                                                                  downscale_factor=self.downscale_factor)
-
-
-        self.D = D
-        self.alfa = alfa
-        self.downscale_factor = downscale_factor
 
     def recalculate_conservatism(self):
         for i in self.gminas.values():
@@ -71,7 +71,7 @@ class ModelClass:
                     self.agents[i].opinion = False
                 else:
                     self.agents[i].opinion = True
-            if random.random() < self.alfa:  # interacja z mieszkancami
+            elif random.random() < self.alfa:  # interacja z mieszkancami
                 who_is_contacted = sample(self.gminas[self.agents[i].homeplace].residents_indices, 1)[0]
                 self.agents[i].opinion = self.agents[who_is_contacted].opinion
             else: # interakcja z pracowinikami
@@ -86,12 +86,13 @@ class ModelClass:
 
 
 
-#TODO: zrobic symulacje dla D = 0
 #TODO: zrobic graf z oznaczonymi opiniami
-#TODO: sprawdzic czy na pewno jest dobrze program
 #TODO: histogram roznic pomiedzy kazda para polaczonych gmin
-#TODO:
-
+#TODO: rozklady poparc w gminach w trakcie symulacji np co 5-10 kroków
+#TODO: scatterplot - opinia w zaleznosci od wielkosci gminy/opinia w zaleznosci od procenta ludzi pracujacych poza gmina
+#TODO: wykres procenta agentow pracujacych poza gmina od wielkosci gminy/procent pracujacych agentow spoza gminy w gminie od wielkosci
+#TODO: opinia w danej gminie od czasu krok po kroku
+#TODO: ZROBIC SZUM ZAMIAST INTERAKCJI
     # aktualny stan modelu wyrzucany jest do 2 plikow
     # pierwszy plik -- zawiera stany agentow w formacie: TERYT \n liczba konserwatystów \n liczba pozostalych
     # drugi plik zawiera wektory polaczen ( w znanym juz formacie 'S' - dla braku polaczen agenta poza gminą i 'TERYT' dla posiadajacych takowe)
@@ -198,15 +199,15 @@ class ModelClass:
     @property
     def overall_conservatism_support(self):
         mn = self.no_of_conservatists/len(self.agents)
-        print("Konserwatyzm w Polsce popiera " + str(round(mn*100,2)) + "% osob")
+        # print("Konserwatyzm w Polsce popiera " + str(round(mn*100,2)) + "% osob")
         return mn
     @property
     def std_dev(self):
         sd = stdev(self.conservatism_in_gminas)
-        print("Odchylenie standardowe rozkladu poparc gmin:" + str(sd))
+        # print("Odchylenie standardowe rozkladu poparc gmin:" + str(sd))
         return sd
     def __str__(self):
-        return "Number of conservatists: " + self.no_of_conservatists
+        return "Number of conservatists: " + str(self.no_of_conservatists)
 
 
 

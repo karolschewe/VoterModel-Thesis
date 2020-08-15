@@ -6,31 +6,38 @@ from sys import getsizeof
 import time
 
 d_value = 0.02
+zmniejszenie = 100
 start = time.time()
-winogronko = ModelClass(D=d_value,)
+winogronko = ModelClass(D=d_value,downscale_factor=zmniejszenie)
 winogronko.populate_agents()
 stop = time.time()
-print("inicjalizacja:")
+print("d:" + str(d_value))
+print("factor:" + str(zmniejszenie))
+print("czas utworzenia modelu:")
 print(stop-start)
-for i in winogronko.gminas["020202"].residents_indices:
-    print(winogronko.agents[i])
-print(winogronko.gminas["020202"].conservatists)
-konserwa = 0
-for i in winogronko.gminas["020202"].residents_indices:
-    if winogronko.agents[i].opinion:
-        konserwa = konserwa + 1
-print(konserwa)
-
+start = time.time()
 winogronko.model_timestep()
+stop = time.time()
+print("iteracja modelu trwala:")
+print(stop-start)
+print("liczba agentow:")
+print(len(winogronko.agents))
 
-print(winogronko.gminas["020202"].conservatists)
-konserwa = 0
-for i in winogronko.gminas["020202"].residents_indices:
-    if winogronko.agents[i].opinion:
-        konserwa = konserwa + 1
-print(konserwa)
-
-
+start = time.time()
+winogronko = ModelClass(D=d_value,downscale_factor=zmniejszenie)
+winogronko.populate_agents()
+stop = time.time()
+print("d:" + str(d_value))
+print("factor:" + str(zmniejszenie))
+print("czas utworzenia modelu:")
+print(stop-start)
+start = time.time()
+winogronko.model_timestep()
+stop = time.time()
+print("iteracja modelu trwala:")
+print(stop-start)
+print("liczba agentow:")
+print(len(winogronko.agents))
 # odchylenia = []
 # srednie = []
 # srednie_na_poziomie_gminy =[]
