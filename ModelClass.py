@@ -79,6 +79,18 @@ class ModelClass:
                 self.agents[i].opinion = self.agents[who_is_contacted].opinion
         self.recalculate_conservatism()
 
+    # def rokzlad_roznic(self):
+    #     roznice = []
+    #     # iteracja po wszystkich gminach
+    #     for gminka in self.gminas.values():
+    #         # wyznaczenie listy polaczen
+    #         polaczenia = []
+    #         for agencik in gminka.workers_indices:
+    #             if self.agents[agencik].workplace != gminka.id:
+    #                 polaczenia.append(self.agents[agencik].workplace)
+    #
+    #
+
 
 
 
@@ -92,7 +104,7 @@ class ModelClass:
 #TODO: scatterplot - opinia w zaleznosci od wielkosci gminy/opinia w zaleznosci od procenta ludzi pracujacych poza gmina
 #TODO: wykres procenta agentow pracujacych poza gmina od wielkosci gminy/procent pracujacych agentow spoza gminy w gminie od wielkosci
 #TODO: opinia w danej gminie od czasu krok po kroku
-#TODO: ZROBIC SZUM ZAMIAST INTERAKCJI
+#TODO: ZROBIC SZUM ZAMIAST INTERAKCJI -- SZUM KTORY JEST WYLOSOWANIEM TYPKA
     # aktualny stan modelu wyrzucany jest do 2 plikow
     # pierwszy plik -- zawiera stany agentow w formacie: TERYT \n liczba konserwatystów \n liczba pozostalych
     # drugi plik zawiera wektory polaczen ( w znanym juz formacie 'S' - dla braku polaczen agenta poza gminą i 'TERYT' dla posiadajacych takowe)
@@ -206,8 +218,12 @@ class ModelClass:
         sd = stdev(self.conservatism_in_gminas)
         # print("Odchylenie standardowe rozkladu poparc gmin:" + str(sd))
         return sd
+
+
     def __str__(self):
         return "Number of conservatists: " + str(self.no_of_conservatists)
+
+
 
 
 

@@ -71,6 +71,9 @@ class GminaClass:
     #     else:
     #         konserwa = 0
     #     return konserwa
+    @property
+    def conservatism_pecentage(self):
+        return self.conservatists/self.n_agents
 
     def __str__(self):
         konserwa = self.conservatists
