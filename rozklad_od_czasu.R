@@ -31,27 +31,28 @@ processBigFile<-function(filepath){
 }
 # test<-processBigFile("data/d_0.01_scale_38/d_0.01_opinion_dist_of_time.txt")
 
-megaPlot<-function(dd,d_factor)
+megaPlot<-function(dd,d_factor,noise)
 {
-  filename<-paste0("data/d_",dd,"_scale_",d_factor,"/d_",dd,"_opinion_dist_of_time.txt")
+  filename<-paste0("data/d_",dd,"_scale_",d_factor,noise,"/d_",dd,"_opinion_dist_of_time.txt")
   data.for.plotting<-processBigFile(filename)
-  par(mfrow=c(4,5))
+  par(mfrow=c(3,3))
   for(i in 1:length(data.for.plotting[[1]]))
   {
     hist(data.for.plotting[[2]][[i]], main = 
-           paste0("opinions in model D = ", dd,"\n factor = ", d_factor," iteration = ",data.for.plotting[[1]][[i]]),
+           paste0("opinions in model D = ", dd," ",noise,"\n factor = ", d_factor," iteration = ",data.for.plotting[[1]][[i]]),
          breaks = 25, xlab = 'CONSERVATISM SUPPORT')
   }
 }
 
-seqq<- c(0,0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25)
+seqq<- c(0,0.01,0.03,0.2)
 d_factor<-100
-folder<-"2020-08-17"
+noise<-""
+folder<-"2020-08-18"
 dir.create(file.path(this.dir, folder),showWarnings = F)
 for(d_value in seqq){
-  pic.name<-paste0(folder,"/dist_of_time_d_",d_value,"_fac_",d_factor,".png")
+  pic.name<-paste0(folder,"/dist_of_time_d_",d_value,"_fac_",d_factor,noise,".png")
   png(pic.name,width = 1400,height = 900)
-  ooo<-megaPlot(d_value,d_factor)
+  ooo<-megaPlot(d_value,d_factor,noise)
   dev.off()
 }
 

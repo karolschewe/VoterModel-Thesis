@@ -26,8 +26,8 @@ plt.scatter(x=test.x,y=test.y)
 plt.show()
 
 start = time.time()
-for i in range(30):
-    winogronko.model_timestep()
+for i in range(2):
+    winogronko.model_timestep(noise_type="nondefault")
 stop = time.time()
 print("iteracja modelu trwala:")
 print(stop-start)

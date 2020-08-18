@@ -68,15 +68,19 @@ class ModelClass:
 
     # krok modelu ansynchronicznie
     # tzn. Opinie agentow nadpisywane sa w trakcie (nie pracujemy na kopii obiektu)
-    def model_timestep(self):
+    def model_timestep(self, noise_type = "symmetric"):
         how_many_agents = len(self.agents)
         random_iterators = list(range(how_many_agents))
         for i in random_iterators:
             if random.random() < self.D:
-                if random.random() < 0.5:
-                    self.agents[i].opinion = False
-                else:
-                    self.agents[i].opinion = True
+                if noise_type == "symmetric": #szum klasyczny
+                    if random.random() < 0.5:
+                        self.agents[i].opinion = False
+                    else:
+                        self.agents[i].opinion = True
+                else: # szum w ktorym mamy losowanie agenta z calej populacji kraju - w ten sposob szum nie zmienia nam sredniej opinii
+                    who_is_chosen = sample(self.agents,1)[0]
+                    self.agents[i].opinion = who_is_chosen.opinion
             elif random.random() < self.alfa:  # interacja z mieszkancami
                 who_is_contacted = sample(self.gminas[self.agents[i].homeplace].residents_indices, 1)[0]
                 self.agents[i].opinion = self.agents[who_is_contacted].opinion

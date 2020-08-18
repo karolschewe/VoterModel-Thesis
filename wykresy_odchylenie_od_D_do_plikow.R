@@ -19,27 +19,28 @@ processFile = function(filepath) {
 
 # par(mfrow=c(3,3))
 
-seqq<- c(0,0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25)
-d_factor<-38
-folder<-"2020-08-17"
+seqq<- c(0,0.01,0.03,0.2)
+d_factor<-100
+folder<-"2020-08-18"
+noise<-"noise_change"
 
 for(i in seqq )
 {
   dir.create(file.path(this.dir, folder),showWarnings = F)
-  png(paste0(folder,"/fact_",d_factor,"_d_",i,".png"),width = 600,height = 600)
+  png(paste0(folder,"/fact_",d_factor,"_d_",i,noise,".png"),width = 600,height = 600)
   par(mfrow=c(2,2))
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/opinions_",i,".txt"))
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,noise,"/opinions_",i,".txt"))
   # print(first.timeseries)
-  hist(first.timeseries, main = paste0("opinions in model D = ", i,"\n factor = ", d_factor),breaks = 25, xlab = 'CONSERVATISM SUPPORT')
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/d_",i,"_sdev.txt"))
+  hist(first.timeseries, main = paste0("opinions in model D = ", i,"\n factor = ", d_factor," ",noise),breaks = 25, xlab = 'CONSERVATISM SUPPORT')
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,noise,"/d_",i,"_sdev.txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("std. deviation in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/mean_overall_",i,".txt"))
+  plot(first.timeseries, main = paste0("std. deviation in time D = ", i,"\n factor = ", d_factor," ",noise), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,noise,"/mean_overall_",i,".txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/means_",i,".txt"))
+  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n factor = ", d_factor," ",noise), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
+  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,noise,"/means_",i,".txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n on gmina level factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
+  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n on gmina level factor = ", d_factor," ",noise), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
   dev.off()
 }
 
