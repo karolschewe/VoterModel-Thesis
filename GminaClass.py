@@ -25,6 +25,7 @@ class GminaClass:
         self.conservatists = round(conservatism_support*self.n_agents)
         self.residents_indices = []
         self.workers_indices = []
+        self.percent_of_outgoers = None
 
     @property
     def id(self):

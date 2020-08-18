@@ -17,6 +17,11 @@ class ModelClass:
     # downscale_factor = 38
     # gminas = {}
     # agents = [] # obiektow klasy agent zawierajacych miejsce opinie, miejsce zamieszkania i miejsce pracy
+    class Plot:
+        def __init__(self,x,y):
+            self.x = x
+            self.y = y
+
 
     def populate_agents(self,travellers_df_filename = "tabela_przeplywy2016_python.csv"): # this function is intended to run only inside ModelClass constructor AFTER gimna class initialisation
         commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
@@ -29,6 +34,7 @@ class ModelClass:
                 to = [row['TO']]
                 vector_of_workplaces.extend(to * how_many_bois) # append numerow gmin do wektora
             how_many_more = i.n_agents - len(vector_of_workplaces)
+            i.percent_of_outgoers = len(vector_of_workplaces)/i.n_agents # dodanie procenta kolesi pracujacych poz gmina
             vector_of_workplaces.extend([i.id] * how_many_more) # "dopelniam" reszte agentow do wektora
             vector_of_workplaces = sample(vector_of_workplaces,i.n_agents)
             vector_of_opinions = sample(i.conservatists * [True] + (i.n_agents - i.conservatists) * [False],i.n_agents) #losowo przydzielam opinie
@@ -79,17 +85,42 @@ class ModelClass:
                 self.agents[i].opinion = self.agents[who_is_contacted].opinion
         self.recalculate_conservatism()
 
-    # def rokzlad_roznic(self):
-    #     roznice = []
-    #     # iteracja po wszystkich gminach
-    #     for gminka in self.gminas.values():
-    #         # wyznaczenie listy polaczen
-    #         polaczenia = []
-    #         for agencik in gminka.workers_indices:
-    #             if self.agents[agencik].workplace != gminka.id:
-    #                 polaczenia.append(self.agents[agencik].workplace)
-    #
-    #
+    def rokzlad_roznic(self,filename = "tabela_przeplywy2016_python.csv"):
+        # od nowa wczytuje sobie pliczek z commuterami
+        commuters = pd.read_csv(filename, dtype={'FROM': str, 'TO': str})
+        opinion_diffs = []
+        # iteracja po wszystkich polaczeniach
+        for idx, row in commuters.iterrows():
+            if row['FROM'] in self.gminas.keys() and row['TO'] in self.gminas.keys():
+                from_opinion = self.gminas[row['FROM']].conservatism_pecentage
+                to_opinion = self.gminas[row['TO']].conservatism_pecentage
+                opinion_diffs.append(from_opinion-to_opinion)
+
+        return opinion_diffs
+    def opinion_of_gmina_size(self):
+        opinions = []
+        populations = []
+        for gmina in self.gminas.values():
+            opinions.append(gmina.conservatism_pecentage)
+            populations.append(gmina.n_agents)
+        plot = self.Plot(x = populations,y = opinions)
+
+        return plot
+
+    def opinion_of_percent_of_outgoers(self):
+        opinions = []
+        outgoers_percent = []
+        for gmina in self.gminas.values():
+            opinions.append(gmina.conservatism_pecentage)
+            outgoers_percent.append(gmina.percent_of_outgoers)
+        plot = self.Plot(x=outgoers_percent, y=opinions)
+        return plot
+
+
+
+
+
+
 
 
 
@@ -99,9 +130,6 @@ class ModelClass:
 
 
 #TODO: zrobic graf z oznaczonymi opiniami
-#TODO: histogram roznic pomiedzy kazda para polaczonych gmin
-#TODO: rozklady poparc w gminach w trakcie symulacji np co 5-10 kroków
-#TODO: scatterplot - opinia w zaleznosci od wielkosci gminy/opinia w zaleznosci od procenta ludzi pracujacych poza gmina
 #TODO: wykres procenta agentow pracujacych poza gmina od wielkosci gminy/procent pracujacych agentow spoza gminy w gminie od wielkosci
 #TODO: opinia w danej gminie od czasu krok po kroku
 #TODO: ZROBIC SZUM ZAMIAST INTERAKCJI -- SZUM KTORY JEST WYLOSOWANIEM TYPKA
