@@ -19,8 +19,12 @@ class ModelClass:
     # agents = [] # obiektow klasy agent zawierajacych miejsce opinie, miejsce zamieszkania i miejsce pracy
     class Plot:
         def __init__(self,x,y):
-            self.x = x
-            self.y = y
+            if len(x) == len(y):
+                self.x = x
+                self.y = y
+            else:
+                print("x is not the same length as y")
+                raise TypeError
 
 
     def populate_agents(self,travellers_df_filename = "tabela_przeplywy2016_python.csv"): # this function is intended to run only inside ModelClass constructor AFTER gimna class initialisation
@@ -102,6 +106,8 @@ class ModelClass:
 
         return opinion_diffs
     def opinion_of_gmina_size(self):
+        # zwraca zaleznosc opinii od populacji gminy
+        # funkcja zwraca obiekt typu plot zawierajacy w sobie dwie listy x i y jako wspolrzedne punktow na wykresie
         opinions = []
         populations = []
         for gmina in self.gminas.values():
@@ -112,12 +118,41 @@ class ModelClass:
         return plot
 
     def opinion_of_percent_of_outgoers(self):
+        # zwraca zaleznosc procenta konserwatyzmu w danej gminie od procenta ludnosci wyjezdzajacej do pracy poza gmine
+        # funkcja zwraca obiekt typu plot zawierajacy w sobie dwie listy x i y jako wspolrzedne punktow na wykresie
         opinions = []
         outgoers_percent = []
         for gmina in self.gminas.values():
             opinions.append(gmina.conservatism_pecentage)
             outgoers_percent.append(gmina.percent_of_outgoers)
         plot = self.Plot(x=outgoers_percent, y=opinions)
+        return plot
+
+    def percent_of_outgoers_of_size(self):
+        outgoers_percentages = []  # y
+        populations = []  # x
+        for i in self.gminas.values():
+            outgoers_percentages.append(i.percent_of_outgoers)
+            populations.append(i.n_agents)
+
+        plot = self.Plot(x = populations, y = outgoers_percentages)
+        return plot
+
+    def percent_of_incomers_of_size(self):
+        incomers_percentages = []
+        population = []
+
+        for i in self.gminas.values():
+            no_of_incomers = 0
+            for j in i.workers_indices:
+                if not self.agents[j].homeplace == i.id:
+                    no_of_incomers = no_of_incomers + 1
+
+            incomers_percent = no_of_incomers/i.n_agents
+            incomers_percentages.append(incomers_percent)
+            population.append(i.n_agents)
+
+        plot = self.Plot(population,incomers_percentages)
         return plot
 
 
@@ -133,8 +168,7 @@ class ModelClass:
 
 
 
-#TODO: zrobic graf z oznaczonymi opiniami
-#TODO: wykres procenta agentow pracujacych poza gmina od wielkosci gminy/procent pracujacych agentow spoza gminy w gminie od wielkosci
+#TODO: kalibracja do rzeczywistej sigmy (rzeczywiste wartosci (chronologicznie) odchylenia:(11.2%,12.8%,12.7%,12.5%,13.6%)
 #TODO: opinia w danej gminie od czasu krok po kroku
 #TODO: ZROBIC SZUM ZAMIAST INTERAKCJI -- SZUM KTORY JEST WYLOSOWANIEM TYPKA
     # aktualny stan modelu wyrzucany jest do 2 plikow

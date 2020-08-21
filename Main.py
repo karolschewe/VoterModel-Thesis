@@ -10,6 +10,11 @@ import matplotlib.pyplot as plt
 # roznice pomiedzy polaczonymi gminami
 # opinie "na biezaco"
 # opinie od procenta wyjezdzajacych
+# policzylem sobie srednia sigme z momentu ustabilizowania sie szeregu czasowego odchylenia standardowewgo(od 30 kroku)
+# wynika z tego, ze dla wyborow 2005 (sigma 11.2%) najlepsze jest D = 0.08, gdzie sigma wyniosła: 0.1121048
+# dla lat 2007-2015 (sigma 12.5% - 12.8%) najlepiej wybrac D:0.06, gdzie srednie odchylenie: 0.1241983
+# dla 2019 roku sigma równa: 13.6%, wartość D = 0.05 jest za mała, a 0.04 zbyt duża, prawdopodobnie najlepiej wziąć 0.045
+
 
 d_value = 0.1
 zmniejszenie = 100
@@ -21,19 +26,37 @@ print("d:" + str(d_value))
 print("factor:" + str(zmniejszenie))
 print("czas utworzenia modelu:")
 print(stop-start)
-test = winogronko.opinion_of_percent_of_outgoers()
-plt.scatter(x=test.x,y=test.y)
-plt.show()
 
+
+
+test = winogronko.percent_of_outgoers_of_size()
+test2 = winogronko.percent_of_incomers_of_size()
+
+plt.scatter(x=test.x,y=test.y,s=8,alpha=0.5)
+plt.title("wykres procenta wyjezdajacych od populacji gminy")
+plt.xlabel("liczba agentow w gminie")
+plt.ylabel("ulamek wyjezdzajacych agentow")
+plt.show()
+plt.scatter(x=test2.x,y=test2.y,s=8,alpha=0.5)
+plt.title("wykres procenta przyjezdzajacych od populacji gminy")
+plt.ylabel("l.przyjezdzajacych do pracy/l.agentow w gminie")
+plt.xlabel("liczba agentow w gminie")
+plt.show()
 start = time.time()
-for i in range(2):
+for i in range(30):
     winogronko.model_timestep(noise_type="nondefault")
 stop = time.time()
 print("iteracja modelu trwala:")
 print(stop-start)
 print("liczba agentow:")
 print(len(winogronko.agents))
-test = winogronko.opinion_of_percent_of_outgoers()
+test = winogronko.percent_of_outgoers_of_size()
+test2 = winogronko.percent_of_incomers_of_size()
 plt.scatter(x=test.x,y=test.y)
+plt.title("wykres procenta wyjezdajacych od populacji gminy")
+plt.xlabel("populacja gminy")
 plt.show()
-
+plt.scatter(x=test2.x,y=test2.y)
+plt.title("wykres procenta przyjezdzajacyc od populacji gminy")
+plt.xlabel("populacja gminy")
+plt.show()

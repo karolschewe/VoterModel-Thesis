@@ -5,10 +5,10 @@ from pathlib import Path
 
 cwd = os.getcwd()
 # d_values = [0,0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25]
-d_values = [0,0.01,0.03,0.2]
-downscale_factors = [38,100]
-liczba_iteracji = 80
-noise_types = ["symmetric","other"]
+d_values = [0.06,0.07,0.08,0.09]
+downscale_factors = [38]
+liczba_iteracji = 150
+noise_types = ["other"]
 # d_values = [0.1]
 
 for noise in noise_types:

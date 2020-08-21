@@ -19,9 +19,9 @@ processFile = function(filepath) {
 
 # par(mfrow=c(3,3))
 
-seqq<- c(0,0.01,0.03,0.2)
-d_factor<-100
-folder<-"2020-08-18"
+seqq<- c(0.06,0.07,0.08,0.09)
+d_factor<-38
+folder<-"2020-08-21"
 noise<-"noise_change"
 
 for(i in seqq )
