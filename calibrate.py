@@ -4,19 +4,18 @@ import os
 from pathlib import Path
 
 cwd = os.getcwd()
-# d_values = [0,0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25]
-d_values = [0.06,0.07,0.08,0.09]
-downscale_factors = [38]
-liczba_iteracji = 150
+d_values = [0,0.02,0.04,0.06,0.8,0.1,0.2]
+downscale_factors = [38,38*2,38*3,38*4]
+liczba_iteracji = 50
 noise_types = ["other"]
 # d_values = [0.1]
 
 for noise in noise_types:
     for i in d_values:
         for j in downscale_factors:
-            directory = cwd + "\data\d_" + str(i) + "_scale_" + str(j)
+            directory = cwd + "\data_corr\d_" + str(i) + "_scale_" + str(j)
             if noise != "symmetric":
-                directory = cwd + "\data\d_" + str(i) + "_scale_" + str(j) + "noise_change"
+                directory = cwd + "\data_corr\d_" + str(i) + "_scale_" + str(j) + "noise_change"
             pth = Path(directory)
             pth.mkdir(exist_ok=True, parents=True)
             start = time.time()
@@ -48,6 +47,7 @@ for noise in noise_types:
             rokzlad_roznic_opinii = model.rokzlad_roznic()
             opinia_od_wielkosci = model.opinion_of_gmina_size()
             opinia_od_procenta_wyjezdzajacych = model.opinion_of_percent_of_outgoers()
+            correlations = model.investigate_correlation()
 
 
             file_out = open(directory + '\d_' + str(i) + '_sdev.txt', 'w')
@@ -66,6 +66,8 @@ for noise in noise_types:
             file_out7 = open(directory + '\opinion_of_outgoers_' + str(i) + '.txt', 'w')
             print(opinia_od_procenta_wyjezdzajacych.x, file=file_out7)
             print(opinia_od_procenta_wyjezdzajacych.y, file=file_out7)
+            file_out8 = open(directory + '\spatial_correlation_' + str(i) + '.txt', 'w')
+            print(correlations, file=file_out8)
 
             stop = time.time()
             print("Model o wspolczynniku D: " + str(i) + " oraz skali zmniejszenia: " + str(j) + " \nwykonal " +

@@ -15,6 +15,9 @@ import matplotlib.pyplot as plt
 # dla lat 2007-2015 (sigma 12.5% - 12.8%) najlepiej wybrac D:0.06, gdzie srednie odchylenie: 0.1241983
 # dla 2019 roku sigma równa: 13.6%, wartość D = 0.05 jest za mała, a 0.04 zbyt duża, prawdopodobnie najlepiej wziąć 0.045
 
+# jak skala zmniejszenia (factor) i d (szum) wspoldzialaja na sigme i korelacje
+# zrobic wykres (dwuwymiarowy) sigmy od factora i d
+# zrobic wykres (3D) wspolczynnika nachylenia prostej y = ax+b gdzie y jest korelacja, a x jest log(r)
 
 d_value = 0.1
 zmniejszenie = 100
@@ -29,34 +32,56 @@ print(stop-start)
 
 
 
-test = winogronko.percent_of_outgoers_of_size()
-test2 = winogronko.percent_of_incomers_of_size()
+# test = winogronko.percent_of_outgoers_of_size()
+# test2 = winogronko.percent_of_incomers_of_size()
 
-plt.scatter(x=test.x,y=test.y,s=8,alpha=0.5)
-plt.title("wykres procenta wyjezdajacych od populacji gminy")
-plt.xlabel("liczba agentow w gminie")
-plt.ylabel("ulamek wyjezdzajacych agentow")
-plt.show()
-plt.scatter(x=test2.x,y=test2.y,s=8,alpha=0.5)
-plt.title("wykres procenta przyjezdzajacych od populacji gminy")
-plt.ylabel("l.przyjezdzajacych do pracy/l.agentow w gminie")
-plt.xlabel("liczba agentow w gminie")
-plt.show()
+korelacje = []
+odleglosci = []
+poczatek = 0
+for i in range(10,30,2):
+    ii = i/10
+    koniec = 10**ii
+    print(str(poczatek) + " do " + str(koniec))
+    tmp = winogronko.calculate_spatial_correlation(poczatek,koniec)
+    print(tmp)
+    poczatek = 10**ii
+    odleglosci.append(koniec)
+    korelacje.append(tmp)
+
+print(korelacje)
+
+
+
+
+# plt.scatter(x=test.x,y=test.y,s=8,alpha=0.5)
+# plt.title("wykres procenta wyjezdajacych od populacji gminy")
+# plt.xlabel("liczba agentow w gminie")
+# plt.ylabel("ulamek wyjezdzajacych agentow")
+# plt.show()
+# plt.scatter(x=test2.x,y=test2.y,s=8,alpha=0.5)
+# plt.title("wykres procenta przyjezdzajacych od populacji gminy")
+# plt.ylabel("l.przyjezdzajacych do pracy/l.agentow w gminie")
+# plt.xlabel("liczba agentow w gminie")
+# plt.show()
 start = time.time()
 for i in range(30):
     winogronko.model_timestep(noise_type="nondefault")
 stop = time.time()
 print("iteracja modelu trwala:")
 print(stop-start)
-print("liczba agentow:")
-print(len(winogronko.agents))
-test = winogronko.percent_of_outgoers_of_size()
-test2 = winogronko.percent_of_incomers_of_size()
-plt.scatter(x=test.x,y=test.y)
-plt.title("wykres procenta wyjezdajacych od populacji gminy")
-plt.xlabel("populacja gminy")
-plt.show()
-plt.scatter(x=test2.x,y=test2.y)
-plt.title("wykres procenta przyjezdzajacyc od populacji gminy")
-plt.xlabel("populacja gminy")
-plt.show()
+
+
+
+print(winogronko.investigate_correlation())
+# print("liczba agentow:")
+# print(len(winogronko.agents))
+# test = winogronko.percent_of_outgoers_of_size()
+# test2 = winogronko.percent_of_incomers_of_size()
+# plt.scatter(x=test.x,y=test.y)
+# plt.title("wykres procenta wyjezdajacych od populacji gminy")
+# plt.xlabel("populacja gminy")
+# plt.show()
+# plt.scatter(x=test2.x,y=test2.y)
+# plt.title("wykres procenta przyjezdzajacyc od populacji gminy")
+# plt.xlabel("populacja gminy")
+# plt.show()

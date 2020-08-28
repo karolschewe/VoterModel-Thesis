@@ -7,8 +7,7 @@ import numpy as np
 from statistics import mean
 from AgentClass import Agent
 
-# zrobic dotychczasowe symulacje
-# zrobic sprawdzenie wariancji od skali zmniejszenia
+
 
 
 class ModelClass:
@@ -48,7 +47,8 @@ class ModelClass:
                 self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
                 assigned_agents = assigned_agents + 1
 
-    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5,downscale_factor = 38):
+    def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5,downscale_factor = 38,
+                 dist_matrix_filename : str = "macierz_odleglosci_cut_teryt.csv"):
         # inicjalizacja z pliku zawierajacego stan poczatkowy
 
         initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
@@ -62,6 +62,10 @@ class ModelClass:
                                                                  population=row['POPULACJA'],
                                                                  conservatism_support=row['APPROX_PERCENTAGE'],
                                                                  downscale_factor=self.downscale_factor)
+        tmp_df = pd.read_csv(dist_matrix_filename)
+        tmp_df = tmp_df.drop("Unnamed: 0", axis=1)
+        tmp_df.index = tmp_df.columns
+        self.d_matr = tmp_df
 
     def recalculate_conservatism(self):
         for i in self.gminas.values():
@@ -154,19 +158,49 @@ class ModelClass:
 
         plot = self.Plot(population,incomers_percentages)
         return plot
+    # function calculating mean spatial correlation for gminas between boundaries
+    def calculate_spatial_correlation(self, lower_bound_km, upper_bound_km):
+        mean_opinion_sq = self.mean_conservatism_in_gminas**2
+        sigma_kwadrat = self.std_dev**2
+        correlation_vec =[]
+        for i in self.gminas.values():
+            # wyznaczam gminy wewnatrz zadanych granic - na tych bedziemy liczyc korelacje
+            if i.id in self.d_matr.columns:
+                neighbours = list(self.d_matr.loc[(self.d_matr[i.id] < upper_bound_km) & (self.d_matr[i.id] > lower_bound_km)].index)
+            else:
+                continue
+            if len(neighbours) > 0:
+                my_opinion = i.conservatism_pecentage
+                opinion_multiplied = []
+                # sredni iloczyn poparc dla i-tej gminy i wyznaczonych gmin z zadanego obszaru
+                for teryt in neighbours:
+                    if teryt in self.gminas.keys():
+                        tmp = my_opinion * self.gminas[teryt].conservatism_pecentage
+                        opinion_multiplied.append(tmp)
+                if len(opinion_multiplied) > 0:
+                    mean_in_area = mean(opinion_multiplied)
+                    mean_diff = mean_in_area - mean_opinion_sq
+                    correlation = mean_diff / sigma_kwadrat
+                    correlation_vec.append(correlation)
+                else:
+                    continue
 
+        mean_spatial_correlation = mean(correlation_vec)
+        return mean_spatial_correlation
 
-
-
-
-
-
-
-
-
-
-
-
+    def investigate_correlation(self,points_to_be_calculated = (10**1,10**1.2,10**1.4,10**1.6,10**1.8,10**2,10**2.2,10**2.4,10**2.6,10**2.8)):
+        korelacje = []
+        odleglosci = []
+        poczatek = 0
+        for i in points_to_be_calculated:
+            koniec = i
+            # print(str(poczatek) + " do " + str(koniec))
+            tmp = self.calculate_spatial_correlation(poczatek, koniec)
+            # print(tmp)
+            poczatek = i
+            odleglosci.append(koniec)
+            korelacje.append(tmp)
+        return korelacje
 
 #TODO: kalibracja do rzeczywistej sigmy (rzeczywiste wartosci (chronologicznie) odchylenia:(11.2%,12.8%,12.7%,12.5%,13.6%)
 #TODO: opinia w danej gminie od czasu krok po kroku
