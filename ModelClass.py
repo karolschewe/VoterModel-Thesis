@@ -205,6 +205,10 @@ class ModelClass:
 #TODO: kalibracja do rzeczywistej sigmy (rzeczywiste wartosci (chronologicznie) odchylenia:(11.2%,12.8%,12.7%,12.5%,13.6%)
 #TODO: opinia w danej gminie od czasu krok po kroku
 #TODO: ZROBIC SZUM ZAMIAST INTERAKCJI -- SZUM KTORY JEST WYLOSOWANIEM TYPKA
+
+#TODO: zrobic symulacje z alfa = 1 (brak linkow),czy to ma wplyw przede wszystkim na korelacje(ale i sigme)
+#TODO: zrobic symulacje dla pomniejszenia liczby populacji tylko do pracujacych dla factora 38 i 16
+#TODO: wykres korelacji od czasu (co kilka krokow zbierac)
     # aktualny stan modelu wyrzucany jest do 2 plikow
     # pierwszy plik -- zawiera stany agentow w formacie: TERYT \n liczba konserwatystów \n liczba pozostalych
     # drugi plik zawiera wektory polaczen ( w znanym juz formacie 'S' - dla braku polaczen agenta poza gminą i 'TERYT' dla posiadajacych takowe)
