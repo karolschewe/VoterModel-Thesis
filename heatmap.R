@@ -63,6 +63,8 @@ for(i in seqq )
   }
 }
 
+plot(x = km,y=korelacje, log = "x")+lines(x = km,predict(reglin))
+
 
 v2 <- ggplot(df, aes(d, factor, z =nachylenie)) + 
   geom_raster(aes(fill = nachylenie)) +
