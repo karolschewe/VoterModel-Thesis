@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 
 cwd = os.getcwd()
-d_values = [0,0.02,0.04,0.06,0.8,0.1,0.2]
-downscale_factors = [38,38*2,38*3,38*4]
+d_values = [0]
+downscale_factors = [38]
 liczba_iteracji = 50
 noise_types = ["other"]
 # d_values = [0.1]
@@ -13,20 +13,20 @@ noise_types = ["other"]
 for noise in noise_types:
     for i in d_values:
         for j in downscale_factors:
-            directory = cwd + "\data_corr\d_" + str(i) + "_scale_" + str(j)
+            directory = cwd + "\data_test_corr_max_zmniejsz\d_" + str(i) + "_scale_" + str(j)
             if noise != "symmetric":
-                directory = cwd + "\data_corr\d_" + str(i) + "_scale_" + str(j) + "noise_change"
+                directory = cwd + "\data_test_corr_max_zmniejsz\d_" + str(i) + "_scale_" + str(j) + "noise_change"
             pth = Path(directory)
             pth.mkdir(exist_ok=True, parents=True)
             start = time.time()
 
-            model = ModelClass(D=i, downscale_factor=j)
+            model = ModelClass(D=i, downscale_factor=j,include_only_workers=True)
             model.populate_agents()
 
             odchylenia = []
             srednie = []
             srednie_na_poziomie_gminy = []
-            new_file = open(directory + '\d_' + str(i) + '_opinion_dist_of_time.txt', 'w')
+            new_file = open(directory + '\d_' + str(i) + '_corr_of_time.txt', 'w')
 
             for g in range(liczba_iteracji):
                 start2 = time.time()
@@ -39,9 +39,10 @@ for noise in noise_types:
                     print("Iteracja modelu:" + str(g))
                     print("Czas wykonania 1 iteracji:")
                     print(stop2 - start2)
-                    rozklad = model.conservatism_in_gminas
+                    correlations = model.investigate_correlation()
                     print(g, file=new_file)
-                    print(rozklad, file=new_file)
+                    print(correlations, file=new_file)
+
 
             rozklad_poparc_w_gminach = model.conservatism_in_gminas
             rokzlad_roznic_opinii = model.rokzlad_roznic()

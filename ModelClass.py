@@ -48,8 +48,12 @@ class ModelClass:
                 assigned_agents = assigned_agents + 1
 
     def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5,downscale_factor = 38,
-                 dist_matrix_filename : str = "macierz_odleglosci_cut_teryt.csv"):
+                 dist_matrix_filename : str = "macierz_odleglosci_cut_teryt.csv", include_only_workers = False):
         # inicjalizacja z pliku zawierajacego stan poczatkowy
+
+        perc_of_pop_working = 1
+        if include_only_workers:
+            perc_of_pop_working = 0.1
 
         initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
         self.D = D
@@ -59,7 +63,7 @@ class ModelClass:
         self.gminas = {}
         for idx, row in initial_state.iterrows():
             self.gminas[row['TERYT']] = GminaClass(teryt_code=row['TERYT'],
-                                                                 population=row['POPULACJA'],
+                                                                 population=row['POPULACJA'] * perc_of_pop_working,
                                                                  conservatism_support=row['APPROX_PERCENTAGE'],
                                                                  downscale_factor=self.downscale_factor)
         tmp_df = pd.read_csv(dist_matrix_filename)
@@ -167,6 +171,7 @@ class ModelClass:
             # wyznaczam gminy wewnatrz zadanych granic - na tych bedziemy liczyc korelacje
             if i.id in self.d_matr.columns:
                 neighbours = list(self.d_matr.loc[(self.d_matr[i.id] < upper_bound_km) & (self.d_matr[i.id] > lower_bound_km)].index)
+                # print(neighbours)
             else:
                 continue
             if len(neighbours) > 0:
@@ -188,14 +193,43 @@ class ModelClass:
         mean_spatial_correlation = mean(correlation_vec)
         return mean_spatial_correlation
 
-    def investigate_correlation(self,points_to_be_calculated = (10**1,10**1.2,10**1.4,10**1.6,10**1.8,10**2,10**2.2,10**2.4,10**2.6,10**2.8)):
+    def alternative_correlation(self, lower_bound_km, upper_bound_km):
+        mean_opinion = self.mean_conservatism_in_gminas
+        opinion_variance = self.std_dev**2
+        correlations_vec = []
+        for i in self.gminas.values():
+            if i.id in self.d_matr.columns:
+                neighbours = list(self.d_matr.loc[(self.d_matr[i.id] < upper_bound_km) & (self.d_matr[i.id] > lower_bound_km)].index)
+                # print(neighbours)
+            else:
+                continue
+            if len(neighbours) > 0:
+                my_opinion = i.conservatism_pecentage
+                product_vec = []
+                for teryt in neighbours:
+                    if teryt in self.gminas.keys():
+                        my_diff = my_opinion - mean_opinion
+                        his_opinion = self.gminas[teryt].conservatism_pecentage
+                        his_diff = his_opinion - mean_opinion
+                        product = my_diff * his_diff
+                        product_vec.append(product)
+                correlation = (sum(product_vec)/len(neighbours))/opinion_variance
+                correlations_vec.append(correlation)
+        mean_correlation = mean(correlations_vec)
+        return mean_correlation
+
+
+    def investigate_correlation(self,points_to_be_calculated = (10**1,10**1.2,10**1.4,10**1.6,10**1.8,10**2,10**2.2,10**2.4,10**2.6,10**2.8), new = False):
         korelacje = []
         odleglosci = []
         poczatek = 0
         for i in points_to_be_calculated:
             koniec = i
             # print(str(poczatek) + " do " + str(koniec))
-            tmp = self.calculate_spatial_correlation(poczatek, koniec)
+            if new:
+                tmp = self.alternative_correlation(poczatek,koniec)
+            else:
+                tmp = self.calculate_spatial_correlation(poczatek, koniec)
             # print(tmp)
             poczatek = i
             odleglosci.append(koniec)

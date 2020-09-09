@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 # zrobic wykres (dwuwymiarowy) sigmy od factora i d
 # zrobic wykres (3D) wspolczynnika nachylenia prostej y = ax+b gdzie y jest korelacja, a x jest log(r)
 
-d_value = 0.1
+d_value = 0.01
 zmniejszenie = 100
 start = time.time()
 winogronko = ModelClass(D=d_value,downscale_factor=zmniejszenie)
@@ -31,25 +31,13 @@ print("czas utworzenia modelu:")
 print(stop-start)
 
 
+print("korelacje stare")
+# print(winogronko.investigate_correlation())
+print("funkcja nowa")
+print(winogronko.investigate_correlation(new=True))
 
 # test = winogronko.percent_of_outgoers_of_size()
 # test2 = winogronko.percent_of_incomers_of_size()
-
-korelacje = []
-odleglosci = []
-poczatek = 0
-for i in range(10,30,2):
-    ii = i/10
-    koniec = 10**ii
-    print(str(poczatek) + " do " + str(koniec))
-    tmp = winogronko.calculate_spatial_correlation(poczatek,koniec)
-    print(tmp)
-    poczatek = 10**ii
-    odleglosci.append(koniec)
-    korelacje.append(tmp)
-
-print(korelacje)
-
 
 
 
@@ -72,7 +60,7 @@ print(stop-start)
 
 
 
-print(winogronko.investigate_correlation())
+print(winogronko.investigate_correlation(new=True))
 # print("liczba agentow:")
 # print(len(winogronko.agents))
 # test = winogronko.percent_of_outgoers_of_size()
