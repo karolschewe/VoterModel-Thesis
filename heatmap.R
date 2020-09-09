@@ -19,19 +19,19 @@ processFile = function(filepath) {
 
 # par(mfrow=c(3,3))
 
-seqq<- c(0,0.02,0.04,0.06,0.8,0.1,0.2)
+seqq<- c(0,0.01,0.02,0.04,0.06,0.08,0.2)
 
-d_factor<-38*1:4
+d_factor<-38*1:2
 df<-expand.grid(d = seqq,factor = d_factor, sigma = NA)
 
 
-folder<-"2020-08-21"
+folder<-"2020-09-03_alpha1"
 noise<-"noise_change"
 for(i in seqq )
 {
   for(jj in d_factor)
   {
-    first.timeseries<-processFile(paste0("data_corr/d_",i,"_scale_",jj,noise,"/d_",i,"_sdev.txt"))
+    first.timeseries<-processFile(paste0("data_alpha1/d_",i,"_scale_",jj,noise,"/d_",i,"_sdev.txt"))
     # print(first.timeseries)
     print(paste0("D:",i))
     bez_poczatku <- 30:length(first.timeseries)
@@ -57,7 +57,7 @@ for(i in seqq )
 {
   for(jj in d_factor)
   {
-    korelacje<-processFile(paste0("data_corr/d_",i,"_scale_",jj,noise,"/spatial_correlation_",i,".txt"))
+    korelacje<-processFile(paste0("data_alpha1/d_",i,"_scale_",jj,noise,"/spatial_correlation_",i,".txt"))
     reglin<-lm(korelacje ~ logkm)
     df$nachylenie[which(df$d==i & df$factor == jj)]<-reglin$coefficients[2]
   }

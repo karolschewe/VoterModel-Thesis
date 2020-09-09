@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 cwd = os.getcwd()
-d_values = [0]
+d_values = [0,0.01,0.02,0.03,0.05,0.1]
 downscale_factors = [38]
 liczba_iteracji = 50
 noise_types = ["other"]
@@ -13,9 +13,9 @@ noise_types = ["other"]
 for noise in noise_types:
     for i in d_values:
         for j in downscale_factors:
-            directory = cwd + "\data_test_corr_max_zmniejsz\d_" + str(i) + "_scale_" + str(j)
+            directory = cwd + "\data_new_corr\d_" + str(i) + "_scale_" + str(j)
             if noise != "symmetric":
-                directory = cwd + "\data_test_corr_max_zmniejsz\d_" + str(i) + "_scale_" + str(j) + "noise_change"
+                directory = cwd + "\data_new_corr\d_" + str(i) + "_scale_" + str(j) + "noise_change"
             pth = Path(directory)
             pth.mkdir(exist_ok=True, parents=True)
             start = time.time()
@@ -39,7 +39,7 @@ for noise in noise_types:
                     print("Iteracja modelu:" + str(g))
                     print("Czas wykonania 1 iteracji:")
                     print(stop2 - start2)
-                    correlations = model.investigate_correlation()
+                    correlations = model.investigate_correlation(new=True)
                     print(g, file=new_file)
                     print(correlations, file=new_file)
 
@@ -48,7 +48,7 @@ for noise in noise_types:
             rokzlad_roznic_opinii = model.rokzlad_roznic()
             opinia_od_wielkosci = model.opinion_of_gmina_size()
             opinia_od_procenta_wyjezdzajacych = model.opinion_of_percent_of_outgoers()
-            correlations = model.investigate_correlation()
+            correlations = model.investigate_correlation(new=True)
 
 
             file_out = open(directory + '\d_' + str(i) + '_sdev.txt', 'w')

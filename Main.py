@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 # zrobic wykres (3D) wspolczynnika nachylenia prostej y = ax+b gdzie y jest korelacja, a x jest log(r)
 
 d_value = 0.01
-zmniejszenie = 100
+zmniejszenie = 38
 start = time.time()
 winogronko = ModelClass(D=d_value,downscale_factor=zmniejszenie)
 winogronko.populate_agents()
