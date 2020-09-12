@@ -4,18 +4,18 @@ import os
 from pathlib import Path
 
 cwd = os.getcwd()
-d_values = [0,0.01,0.02,0.03,0.05,0.1]
-downscale_factors = [38]
-liczba_iteracji = 50
+d_values = [0,0.01,0.02,0.03,0.06,0.1]
+downscale_factors = [38,100]
+liczba_iteracji = 280
 noise_types = ["other"]
 # d_values = [0.1]
 
 for noise in noise_types:
     for i in d_values:
         for j in downscale_factors:
-            directory = cwd + "\data_new_corr\d_" + str(i) + "_scale_" + str(j)
+            directory = cwd + "\data_new_corr_long_only_wrk\d_" + str(i) + "_scale_" + str(j)
             if noise != "symmetric":
-                directory = cwd + "\data_new_corr\d_" + str(i) + "_scale_" + str(j) + "noise_change"
+                directory = cwd + "\data_new_corr_long_only_wrk\d_" + str(i) + "_scale_" + str(j) + "noise_change"
             pth = Path(directory)
             pth.mkdir(exist_ok=True, parents=True)
             start = time.time()
@@ -35,7 +35,7 @@ for noise in noise_types:
                 srednie.append(model.overall_conservatism_support)
                 srednie_na_poziomie_gminy.append(model.mean_conservatism_in_gminas)
                 stop2 = time.time()
-                if g % 10 == 0:
+                if g % 20 == 0:
                     print("Iteracja modelu:" + str(g))
                     print("Czas wykonania 1 iteracji:")
                     print(stop2 - start2)

@@ -53,7 +53,7 @@ class ModelClass:
 
         perc_of_pop_working = 1
         if include_only_workers:
-            perc_of_pop_working = 0.1
+            perc_of_pop_working = 16/38
 
         initial_state = pd.read_csv(initial_state_filename, dtype={'TERYT': str})
         self.D = D
