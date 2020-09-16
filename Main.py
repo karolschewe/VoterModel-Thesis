@@ -20,59 +20,14 @@ import matplotlib.pyplot as plt
 # zrobic wykres (3D) wspolczynnika nachylenia prostej y = ax+b gdzie y jest korelacja, a x jest log(r)
 
 d_value = 0.01
-zmniejszenie = 200
+
 start = time.time()
-winogronko = ModelClass(D=d_value,downscale_factor=zmniejszenie)
-winogronko.populate_agents()
-winogronko.define_pockets()
+winogronko = ModelClass(D=d_value)
 stop = time.time()
 print("d:" + str(d_value))
-print("factor:" + str(zmniejszenie))
 print("czas utworzenia modelu:")
 print(stop-start)
-print(winogronko.pocket["020103"]["020101"])
-for i in range(len(winogronko.agents)):
-    if winogronko.agents[i].homeplace == "020103":
-        if winogronko.agents[i].workplace == "020101":
-            print(winogronko.agents[i])
-            print(i)
-print("HALOKURWA")
+print(winogronko.pockets["020103"]["020101"])
+print(winogronko.pockets["020103"]["020103"])
 
 
-# test = winogronko.percent_of_outgoers_of_size()
-# test2 = winogronko.percent_of_incomers_of_size()
-
-
-
-# plt.scatter(x=test.x,y=test.y,s=8,alpha=0.5)
-# plt.title("wykres procenta wyjezdajacych od populacji gminy")
-# plt.xlabel("liczba agentow w gminie")
-# plt.ylabel("ulamek wyjezdzajacych agentow")
-# plt.show()
-# plt.scatter(x=test2.x,y=test2.y,s=8,alpha=0.5)
-# plt.title("wykres procenta przyjezdzajacych od populacji gminy")
-# plt.ylabel("l.przyjezdzajacych do pracy/l.agentow w gminie")
-# plt.xlabel("liczba agentow w gminie")
-# plt.show()
-start = time.time()
-for i in range(30):
-    winogronko.model_timestep(noise_type="nondefault")
-stop = time.time()
-print("iteracja modelu trwala:")
-print(stop-start)
-
-
-
-print(winogronko.investigate_correlation(new=True))
-# print("liczba agentow:")
-# print(len(winogronko.agents))
-# test = winogronko.percent_of_outgoers_of_size()
-# test2 = winogronko.percent_of_incomers_of_size()
-# plt.scatter(x=test.x,y=test.y)
-# plt.title("wykres procenta wyjezdajacych od populacji gminy")
-# plt.xlabel("populacja gminy")
-# plt.show()
-# plt.scatter(x=test2.x,y=test2.y)
-# plt.title("wykres procenta przyjezdzajacyc od populacji gminy")
-# plt.xlabel("populacja gminy")
-# plt.show()
