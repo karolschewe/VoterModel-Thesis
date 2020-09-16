@@ -20,21 +20,24 @@ import matplotlib.pyplot as plt
 # zrobic wykres (3D) wspolczynnika nachylenia prostej y = ax+b gdzie y jest korelacja, a x jest log(r)
 
 d_value = 0.01
-zmniejszenie = 38
+zmniejszenie = 200
 start = time.time()
 winogronko = ModelClass(D=d_value,downscale_factor=zmniejszenie)
 winogronko.populate_agents()
+winogronko.define_pockets()
 stop = time.time()
 print("d:" + str(d_value))
 print("factor:" + str(zmniejszenie))
 print("czas utworzenia modelu:")
 print(stop-start)
+print(winogronko.pocket["020103"]["020101"])
+for i in range(len(winogronko.agents)):
+    if winogronko.agents[i].homeplace == "020103":
+        if winogronko.agents[i].workplace == "020101":
+            print(winogronko.agents[i])
+            print(i)
+print("HALOKURWA")
 
-
-print("korelacje stare")
-# print(winogronko.investigate_correlation())
-print("funkcja nowa")
-print(winogronko.investigate_correlation(new=True))
 
 # test = winogronko.percent_of_outgoers_of_size()
 # test2 = winogronko.percent_of_incomers_of_size()

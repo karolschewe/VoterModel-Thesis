@@ -71,12 +71,29 @@ class ModelClass:
         tmp_df.index = tmp_df.columns
         self.d_matr = tmp_df
 
+    def define_pockets(self):
+        self.pocket = {}
+        for i in range(len(self.agents)):
+            if self.agents[i].homeplace in self.pocket.keys():
+                if self.agents[i].workplace in self.pocket[self.agents[i].homeplace].keys():
+                    self.pocket[self.agents[i].homeplace][self.agents[i].workplace].append(i)
+                else:
+                    self.pocket[self.agents[i].homeplace][self.agents[i].workplace] = []
+                    self.pocket[self.agents[i].homeplace][self.agents[i].workplace].append(i)
+            else:
+                self.pocket[self.agents[i].homeplace] = {}
+                self.pocket[self.agents[i].homeplace][self.agents[i].workplace] = []
+                self.pocket[self.agents[i].homeplace][self.agents[i].workplace].append(i)
+
     def recalculate_conservatism(self):
         for i in self.gminas.values():
             i.conservatists = 0
             for j in i.residents_indices:
                 if self.agents[j].opinion:
                     i.conservatists += 1
+
+
+
 
     # krok modelu ansynchronicznie
     # tzn. Opinie agentow nadpisywane sa w trakcie (nie pracujemy na kopii obiektu)

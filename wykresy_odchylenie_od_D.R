@@ -21,17 +21,17 @@ processFile = function(filepath) {
 
 seqq<- 0.01
 d_factor<-100
-png("test.png")
+
 par(mfrow=c(2,2))
 for(i in seqq )
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/opinions_",i,".txt"))
+  first.timeseries<-processFile(paste0("data_new_corr_long_only_wrk/d_",i,"_scale_",d_factor,"noise_change/opinions_",i,".txt"))
   # print(first.timeseries)
   hist(first.timeseries, main = paste0("opinions in model D = ", i,"\n factor = ", d_factor),breaks = 25, xlab = 'CONSERVATISM SUPPORT')
 }
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/d_",i,"_sdev.txt"))
+  first.timeseries<-processFile(paste0("data_new_corr_long_only_wrk/d_",i,"_scale_",d_factor,"noise_change/d_",i,"_sdev.txt"))
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("std. deviation in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
 }
@@ -39,7 +39,7 @@ for(i in seqq)
 
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/mean_overall_",i,".txt"))
+  first.timeseries<-processFile(paste0("data_new_corr_long_only_wrk/d_",i,"_scale_",d_factor,"noise_change/mean_overall_",i,".txt"))
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
 }
@@ -47,8 +47,8 @@ for(i in seqq)
 
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/means_",i,".txt"))
+  first.timeseries<-processFile(paste0("data_new_corr_long_only_wrk/d_",i,"_scale_",d_factor,"noise_change/means_",i,".txt"))
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n on gmina level factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
 }
-dev.off()
+
