@@ -9,3 +9,6 @@ class Pocket:
     def __str__(self):
         return "Mieszkamy w " + self.homeplace + ", pracujemy w " + self.workplace \
                + "\n Jest nas" + str(self.population) + "\nPoparcie konserwatyzmu: " + str(self.conservatism)
+
+    def depopulate(self,n):
+        self.population = self.population-n

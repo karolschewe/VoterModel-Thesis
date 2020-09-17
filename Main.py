@@ -30,4 +30,9 @@ print(stop-start)
 print(winogronko.pockets["020103"]["020101"])
 print(winogronko.pockets["020103"]["020103"])
 
+ludnosc = 0
+for i in winogronko.pockets["020103"].values():
+    ludnosc = ludnosc + i.population
+print(ludnosc)
 
+print(winogronko.gminas_pops["020103"])

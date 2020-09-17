@@ -65,18 +65,32 @@ class ModelClass:
         self.D = D
         self.alfa = alfa
         self.pockets = {}
+        self.gminas_pops = {}
+        self.gminas_workforce = {}
         for idx, row in initial_state.iterrows():
             self.pockets[row['TERYT']] = {}
             self.pockets[row['TERYT']][row['TERYT']] = Pocket(homeplace=row['TERYT'],
                                                               workplace = row['TERYT'],
                                                                  population=row['POPULACJA'] * perc_of_pop_working,
                                                                  conservatism=row['APPROX_PERCENTAGE'])
+            self.gminas_pops[row['TERYT']] = row['POPULACJA'] * perc_of_pop_working
         commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
         for idx, row in commuters.iterrows():
             if row['FROM'] in self.pockets.keys():
                 self.pockets[row['FROM']][row['TO']] = Pocket(homeplace=row['FROM'], workplace=row['TO'],
                                                               population=row['n'],
                                                               conservatism=self.pockets[row['FROM']][row['FROM']].conservatism)
+                self.pockets[row['FROM']][row['FROM']].depopulate(row['n'])
+                if row['TO'] in self.gminas_workforce.keys():
+                    self.gminas_workforce[row['TO']] = self.gminas_workforce[row['TO']]+row['n']
+                else:
+                    self.gminas_workforce[row['TO']]=row['n']
+        for homeplaces in self.gminas_pops.keys():
+            if homeplaces in self.gminas_workforce.keys():
+                self.gminas_workforce[homeplaces] = self.gminas_workforce[homeplaces] + self.pockets[homeplaces][homeplaces].population
+            else:
+                self.gminas_workforce[homeplaces] = self.pockets[homeplaces][homeplaces].population
+
 
 
 
@@ -84,6 +98,12 @@ class ModelClass:
         tmp_df = tmp_df.drop("Unnamed: 0", axis=1)
         tmp_df.index = tmp_df.columns
         self.d_matr = tmp_df
+
+    def calculate_pocket_timestep(self,pocket):
+        homeplace_interactions = 0
+        workplace_interactions = 0
+        for i in self.pockets[pocket.homeplace].values():
+            pass
 
 
 
