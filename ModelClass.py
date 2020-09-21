@@ -67,6 +67,7 @@ class ModelClass:
         self.pockets = {}
         self.gminas_pops = {}
         self.gminas_workforce = {}
+        self.gminas_incomers = {}
         for idx, row in initial_state.iterrows():
             self.pockets[row['TERYT']] = {}
             self.pockets[row['TERYT']][row['TERYT']] = Pocket(homeplace=row['TERYT'],
@@ -85,6 +86,9 @@ class ModelClass:
                     self.gminas_workforce[row['TO']] = self.gminas_workforce[row['TO']]+row['n']
                 else:
                     self.gminas_workforce[row['TO']]=row['n']
+                if row['TO'] not in self.gminas_incomers.keys():
+                    self.gminas_incomers[row['TO']] = [row['TO']]
+                self.gminas_incomers[row['TO']].append(row['FROM'])
         for homeplaces in self.gminas_pops.keys():
             if homeplaces in self.gminas_workforce.keys():
                 self.gminas_workforce[homeplaces] = self.gminas_workforce[homeplaces] + self.pockets[homeplaces][homeplaces].population
@@ -99,11 +103,34 @@ class ModelClass:
         tmp_df.index = tmp_df.columns
         self.d_matr = tmp_df
 
+# bez szumu !!!!
     def calculate_pocket_timestep(self,pocket):
         homeplace_interactions = 0
         workplace_interactions = 0
+        # iteracja po wszystkich ktorzy mieszkaja w i
         for i in self.pockets[pocket.homeplace].values():
-            pass
+            # przyczynek = populacja populacja mieszkajacych w i oraz pracujacych gdziekolwiek / populacja gminy i
+            tmp = i.population/self.gminas_pops[pocket.homeplace]
+            # delta kronekera
+            if i.workplace == pocket.workplace:
+                tmp = tmp - 1
+            # przemnozenie przez prawdopodobienstwo interakcji z mieszkancem i opinie pocketa mieszkajacego w i oraz pracujacego gdziekolwiek
+            tmp = tmp * self.alfa * i.conservatism
+            #sumowanie przyczynkow
+            homeplace_interactions = homeplace_interactions + tmp
+        # iteracja po wszystkich ktorzy pracuja w j
+        for teryt in self.gminas_incomers[pocket.workplace]:
+            # przyczynek = przyjezdzajacy skadkolwiek do gminy j / liczba pracujacych w gminie j
+            tmp2 = self.pockets[teryt][pocket.workplace].population / self.gminas_workforce[pocket.workplace]
+            if pocket.homeplace == teryt:
+                tmp2 = tmp2 - 1
+            tmp2 = (1 - self.alfa) * tmp2 * self.pockets[teryt][pocket.workplace].conservatism
+            workplace_interactions = workplace_interactions + tmp2
+        return workplace_interactions + homeplace_interactions
+
+
+
+
 
 
 

@@ -5,6 +5,7 @@ class Pocket:
         self.workplace = workplace
         self.population = population
         self.conservatism = conservatism
+        self.conservatists = population * conservatism
 
     def __str__(self):
         return "Mieszkamy w " + self.homeplace + ", pracujemy w " + self.workplace \
@@ -12,3 +13,6 @@ class Pocket:
 
     def depopulate(self,n):
         self.population = self.population-n
+
+    def recalculate_conservatism(self):
+        self.conservatism = self.conservatists/self.population

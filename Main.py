@@ -29,10 +29,11 @@ print("czas utworzenia modelu:")
 print(stop-start)
 print(winogronko.pockets["020103"]["020101"])
 print(winogronko.pockets["020103"]["020103"])
-
+print(winogronko.gminas_incomers["020103"])
 ludnosc = 0
 for i in winogronko.pockets["020103"].values():
     ludnosc = ludnosc + i.population
 print(ludnosc)
 
 print(winogronko.gminas_pops["020103"])
+print(winogronko.calculate_pocket_timestep(winogronko.pockets["020103"]["020103"]))
