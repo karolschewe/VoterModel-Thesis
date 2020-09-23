@@ -37,3 +37,19 @@ print(ludnosc)
 
 print(winogronko.gminas_pops["020103"])
 print(winogronko.calculate_pocket_timestep(winogronko.pockets["020103"]["020103"]))
+
+przed = winogronko.conservatism_distribution
+plt.hist(przed)
+plt.show()
+
+liczba_iteracji = 50
+start = time.time()
+for i in range(liczba_iteracji):
+    winogronko.model_timestep()
+stop = time.time()
+print("czas "+ str(liczba_iteracji) + "iteracji:")
+print(stop-start)
+
+po = winogronko.conservatism_distribution
+plt.hist(po)
+plt.show()

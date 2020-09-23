@@ -119,14 +119,32 @@ class ModelClass:
             #sumowanie przyczynkow
             homeplace_interactions = homeplace_interactions + tmp
         # iteracja po wszystkich ktorzy pracuja w j
-        for teryt in self.gminas_incomers[pocket.workplace]:
-            # przyczynek = przyjezdzajacy skadkolwiek do gminy j / liczba pracujacych w gminie j
-            tmp2 = self.pockets[teryt][pocket.workplace].population / self.gminas_workforce[pocket.workplace]
-            if pocket.homeplace == teryt:
-                tmp2 = tmp2 - 1
-            tmp2 = (1 - self.alfa) * tmp2 * self.pockets[teryt][pocket.workplace].conservatism
-            workplace_interactions = workplace_interactions + tmp2
+        if pocket.workplace in self.gminas_incomers.keys():
+            for teryt in self.gminas_incomers[pocket.workplace]:
+                # przyczynek = przyjezdzajacy skadkolwiek do gminy j / liczba pracujacych w gminie j
+                if teryt in self.pockets.keys():
+                    tmp2 = self.pockets[teryt][pocket.workplace].population / self.gminas_workforce[pocket.workplace]
+                    if pocket.homeplace == teryt:
+                        tmp2 = tmp2 - 1
+                    tmp2 = (1 - self.alfa) * tmp2 * self.pockets[teryt][pocket.workplace].conservatism
+                    workplace_interactions = workplace_interactions + tmp2
+
+
         return workplace_interactions + homeplace_interactions
+
+    def model_timestep(self):
+        for homeplace in self.pockets.values():
+            for pocket in homeplace.values():
+                pocket.conservatism = pocket.conservatism + self.calculate_pocket_timestep(pocket)
+                pocket.recalculate_conservatists()
+
+    @property
+    def conservatism_distribution(self):
+        tmp = []
+        for homeplace in self.pockets.values():
+            for pocket in homeplace.values():
+                tmp.append(pocket.conservatism)
+        return tmp
 
 
 

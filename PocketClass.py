@@ -12,7 +12,10 @@ class Pocket:
                + "\n Jest nas" + str(self.population) + "\nPoparcie konserwatyzmu: " + str(self.conservatism)
 
     def depopulate(self,n):
-        self.population = self.population-n
+        if self.population-n > 0:
+            self.population = self.population-n
+        else:
+            self.population = 1
 
-    def recalculate_conservatism(self):
-        self.conservatism = self.conservatists/self.population
+    def recalculate_conservatists(self):
+        self.conservatists = self.population*self.conservatism
