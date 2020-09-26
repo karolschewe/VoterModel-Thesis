@@ -42,7 +42,7 @@ przed = winogronko.conservatism_distribution
 plt.hist(przed)
 plt.show()
 
-liczba_iteracji = 50
+liczba_iteracji = 150
 start = time.time()
 for i in range(liczba_iteracji):
     winogronko.model_timestep()
