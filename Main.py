@@ -27,29 +27,30 @@ stop = time.time()
 print("d:" + str(d_value))
 print("czas utworzenia modelu:")
 print(stop-start)
-print(winogronko.pockets["020103"]["020101"])
-print(winogronko.pockets["020103"]["020103"])
-print(winogronko.gminas_incomers["020103"])
-ludnosc = 0
-for i in winogronko.pockets["020103"].values():
-    ludnosc = ludnosc + i.population
-print(ludnosc)
 
-print(winogronko.gminas_pops["020103"])
-print(winogronko.calculate_pocket_timestep(winogronko.pockets["020103"]["020103"]))
-
-przed = winogronko.conservatism_distribution
-plt.hist(przed)
+print(winogronko.conservatism_in_gminas())
+# czy nie uwazasz ze korelacja powinna wyjsc taka sama???
+start = time.time()
+# print(winogronko.investigate_correlation())
+print(winogronko.gminas_pops)
+corr = winogronko.investigate_correlation()
+print(corr)
+plt.scatter(y=corr,x=winogronko.breakpoints)
 plt.show()
 
-liczba_iteracji = 150
-start = time.time()
-for i in range(liczba_iteracji):
-    winogronko.model_timestep()
+polaczenia_dict = {}
+for i in winogronko.gminas_neighbours.values():
+    for odleglosc, polaczenia in i.items():
+        if not odleglosc in polaczenia_dict.keys():
+            polaczenia_dict[odleglosc] = 0
+        polaczenia_dict[odleglosc] = polaczenia_dict[odleglosc] + len(polaczenia)
+
+print("liczba polaczen")
+print(polaczenia_dict)
+
 stop = time.time()
-print("czas "+ str(liczba_iteracji) + "iteracji:")
+print("czas korelacja:")
 print(stop-start)
 
-po = winogronko.conservatism_distribution
-plt.hist(po)
-plt.show()
+
+# korelacje cos za dlugo sie kreca :/
