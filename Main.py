@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 # zrobic wykres (dwuwymiarowy) sigmy od factora i d
 # zrobic wykres (3D) wspolczynnika nachylenia prostej y = ax+b gdzie y jest korelacja, a x jest log(r)
 
-d_value = 0.01
+d_value = 0.0
 
 start = time.time()
 winogronko = ModelClass(D=d_value)
@@ -28,29 +28,6 @@ print("d:" + str(d_value))
 print("czas utworzenia modelu:")
 print(stop-start)
 
-print(winogronko.conservatism_in_gminas())
-# czy nie uwazasz ze korelacja powinna wyjsc taka sama???
-start = time.time()
-# print(winogronko.investigate_correlation())
-print(winogronko.gminas_pops)
-corr = winogronko.investigate_correlation()
-print(corr)
-plt.scatter(y=corr,x=winogronko.breakpoints)
-plt.show()
-
-polaczenia_dict = {}
-for i in winogronko.gminas_neighbours.values():
-    for odleglosc, polaczenia in i.items():
-        if not odleglosc in polaczenia_dict.keys():
-            polaczenia_dict[odleglosc] = 0
-        polaczenia_dict[odleglosc] = polaczenia_dict[odleglosc] + len(polaczenia)
-
-print("liczba polaczen")
-print(polaczenia_dict)
-
-stop = time.time()
-print("czas korelacja:")
-print(stop-start)
-
+print(winogronko.investigate_correlation())
 
 # korelacje cos za dlugo sie kreca :/

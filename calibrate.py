@@ -4,18 +4,18 @@ import os
 from pathlib import Path
 
 cwd = os.getcwd()
-d_values = [0,0.01,0.03,0.08]
+d_values = [0]
 downscale_factors = [1]
-liczba_iteracji = 5000
+liczba_iteracji = 3500
 noise_types = ["other"]
 # d_values = [0.1]
 
 for noise in noise_types:
     for i in d_values:
         for j in downscale_factors:
-            directory = cwd + "\data_mean_field_by_gmina_long\d_" + str(i)
+            directory = cwd + "\data_mean_field_by_gmina_long2\d_" + str(i)
             if noise != "symmetric":
-                directory = cwd + "\data_mean_field_by_gmina_long\d_" + str(i)  + "noise_change"
+                directory = cwd + "\data_mean_field_by_gmina_long2\d_" + str(i)  + "noise_change"
             pth = Path(directory)
             pth.mkdir(exist_ok=True, parents=True)
             start = time.time()
@@ -26,9 +26,14 @@ for noise in noise_types:
             srednie = []
             srednie_na_poziomie_gminy = []
             new_file = open(directory + '\d_' + str(i) + '_corr_of_time.txt', 'w')
-            correlations = model.investigate_correlation()
+            cov_file = open(directory + '\d_' + str(i) + '_cov_of_time.txt', 'w')
+            investigate = model.investigate_correlation()
+            correlations = model.investigate_correlation()[0]
+            covariance = model.investigate_correlation()[1]
             print(0, file=new_file)
             print(correlations, file=new_file)
+            print(0, file=cov_file)
+            print(covariance, file=cov_file)
             for g in range(liczba_iteracji):
                 start2 = time.time()
                 model.model_timestep()
@@ -40,11 +45,15 @@ for noise in noise_types:
                     print("Iteracja modelu:" + str(g))
                     print("Czas wykonania 1 iteracji:")
                     print(stop2 - start2)
-                    correlations = model.investigate_correlation()
+                    investigation = model.investigate_correlation()
+                    correlations = investigation[0]
+                    covariance = investigation[1]
                     print(g, file=new_file)
                     print(correlations, file=new_file)
-                    if model.check_if_interrupted() == True:
-                        break
+                    print(g, file=cov_file)
+                    print(covariance, file=cov_file)
+                    # if model.check_if_interrupted() == True:
+                    #     break
 
 
             rozklad_poparc_w_gminach = model.conservatism_distribution

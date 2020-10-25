@@ -38,7 +38,7 @@ class ModelClass:
 
     def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5,
                  dist_matrix_filename : str = "macierz_odleglosci_cut_teryt.csv",
-                 travellers_df_filename = "tabela_przeplywy2016_python.csv",test = False):
+                 travellers_df_filename = "tabela_przeplywy2016_python.csv",uniform_dist = False):
         # inicjalizacja z pliku zawierajacego stan poczatkowy
 
         perc_of_pop_working = 1
@@ -51,35 +51,67 @@ class ModelClass:
         self.gminas_workforce = {}
         self.gminas_incomers = {}
         self.gminas_neighbours = {}
-        for idx, row in initial_state.iterrows():
-            self.pockets[row['TERYT']] = {}
-            self.pockets[row['TERYT']][row['TERYT']] = Pocket(homeplace=row['TERYT'],
-                                                              workplace=row['TERYT'],
-                                                              population=row['POPULACJA'] * perc_of_pop_working,
-                                                              conservatism=row['APPROX_PERCENTAGE'])
-            self.gminas_pops[row['TERYT']] = row['POPULACJA'] * perc_of_pop_working
-        commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
-        for idx, row in commuters.iterrows():
-            if row['FROM'] in self.pockets.keys() and not row['FROM'] == row['TO']:
-                self.pockets[row['FROM']][row['TO']] = Pocket(homeplace=row['FROM'], workplace=row['TO'],
-                                                              population=row['n'],
-                                                              conservatism=self.pockets[row['FROM']][
-                                                                  row['FROM']].conservatism)
-                self.pockets[row['FROM']][row['FROM']].depopulate(row['n'])
-                self.pockets[row['FROM']][row['FROM']].recalculate_conservatists()
-                if row['TO'] in self.gminas_workforce.keys():
-                    self.gminas_workforce[row['TO']] = self.gminas_workforce[row['TO']] + row['n']
+        if not uniform_dist:
+            for idx, row in initial_state.iterrows():
+                self.pockets[row['TERYT']] = {}
+                self.pockets[row['TERYT']][row['TERYT']] = Pocket(homeplace=row['TERYT'],
+                                                                  workplace=row['TERYT'],
+                                                                  population=row['POPULACJA'] * perc_of_pop_working,
+                                                                  conservatism=row['APPROX_PERCENTAGE'])
+                self.gminas_pops[row['TERYT']] = row['POPULACJA'] * perc_of_pop_working
+            commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
+            for idx, row in commuters.iterrows():
+                if row['FROM'] in self.pockets.keys() and not row['FROM'] == row['TO']:
+                    self.pockets[row['FROM']][row['TO']] = Pocket(homeplace=row['FROM'], workplace=row['TO'],
+                                                                  population=row['n'],
+                                                                  conservatism=self.pockets[row['FROM']][
+                                                                      row['FROM']].conservatism)
+                    self.pockets[row['FROM']][row['FROM']].depopulate(row['n'])
+                    self.pockets[row['FROM']][row['FROM']].recalculate_conservatists()
+                    if row['TO'] in self.gminas_workforce.keys():
+                        self.gminas_workforce[row['TO']] = self.gminas_workforce[row['TO']] + row['n']
+                    else:
+                        self.gminas_workforce[row['TO']] = row['n']
+                    if row['TO'] not in self.gminas_incomers.keys():
+                        self.gminas_incomers[row['TO']] = [row['TO']]
+                    self.gminas_incomers[row['TO']].append(row['FROM'])
+            for homeplaces in self.gminas_pops.keys():
+                if homeplaces in self.gminas_workforce.keys():
+                    self.gminas_workforce[homeplaces] = self.gminas_workforce[homeplaces] + self.pockets[homeplaces][
+                        homeplaces].population
                 else:
-                    self.gminas_workforce[row['TO']] = row['n']
-                if row['TO'] not in self.gminas_incomers.keys():
-                    self.gminas_incomers[row['TO']] = [row['TO']]
-                self.gminas_incomers[row['TO']].append(row['FROM'])
-        for homeplaces in self.gminas_pops.keys():
-            if homeplaces in self.gminas_workforce.keys():
-                self.gminas_workforce[homeplaces] = self.gminas_workforce[homeplaces] + self.pockets[homeplaces][
-                    homeplaces].population
-            else:
-                self.gminas_workforce[homeplaces] = self.pockets[homeplaces][homeplaces].population
+                    self.gminas_workforce[homeplaces] = self.pockets[homeplaces][homeplaces].population
+        if uniform_dist:
+            for idx, row in initial_state.iterrows():
+                self.pockets[row['TERYT']] = {}
+                self.pockets[row['TERYT']][row['TERYT']] = Pocket(homeplace=row['TERYT'],
+                                                                  workplace=row['TERYT'],
+                                                                  population=row['POPULACJA'] * perc_of_pop_working,
+                                                                  conservatism=0.5)
+                self.gminas_pops[row['TERYT']] = row['POPULACJA'] * perc_of_pop_working
+            commuters = pd.read_csv(travellers_df_filename, dtype={'FROM': str, 'TO': str})
+            for idx, row in commuters.iterrows():
+                if row['FROM'] in self.pockets.keys() and not row['FROM'] == row['TO']:
+                    self.pockets[row['FROM']][row['TO']] = Pocket(homeplace=row['FROM'], workplace=row['TO'],
+                                                                  population=row['n'],
+                                                                  conservatism=self.pockets[row['FROM']][
+                                                                      row['FROM']].conservatism)
+                    self.pockets[row['FROM']][row['FROM']].depopulate(row['n'])
+                    self.pockets[row['FROM']][row['FROM']].recalculate_conservatists()
+                    if row['TO'] in self.gminas_workforce.keys():
+                        self.gminas_workforce[row['TO']] = self.gminas_workforce[row['TO']] + row['n']
+                    else:
+                        self.gminas_workforce[row['TO']] = row['n']
+                    if row['TO'] not in self.gminas_incomers.keys():
+                        self.gminas_incomers[row['TO']] = [row['TO']]
+                    self.gminas_incomers[row['TO']].append(row['FROM'])
+            for homeplaces in self.gminas_pops.keys():
+                if homeplaces in self.gminas_workforce.keys():
+                    self.gminas_workforce[homeplaces] = self.gminas_workforce[homeplaces] + self.pockets[homeplaces][
+                        homeplaces].population
+                else:
+                    self.gminas_workforce[homeplaces] = self.pockets[homeplaces][homeplaces].population
+
 
         tmp_df = pd.read_csv(dist_matrix_filename)
         tmp_df = tmp_df.drop("Unnamed: 0", axis=1)
@@ -189,6 +221,7 @@ class ModelClass:
         mean_opinion_sq = self.mean_conservatism_in_gminas**2
         sigma_kwadrat = self.sigma_in_gminas**2
         correlation_vec = []
+        covariance_vec = []
         conservatists = self.conservatism_in_gminas()
         for teryt, homeplace in self.pockets.items():
             if teryt in self.gminas_neighbours.keys():
@@ -205,15 +238,18 @@ class ModelClass:
                 if len(opinion_multiplied) > 0:
                     mean_in_area = np.mean(opinion_multiplied)
                     mean_diff = mean_in_area - mean_opinion_sq
+                    covariance_vec.append(mean_diff)
                     correlation = mean_diff / sigma_kwadrat
                     correlation_vec.append(correlation)
                 else:
                     continue
         mean_spatial_correlation = mean(correlation_vec)
-        return mean_spatial_correlation
+        mean_covariance = mean(covariance_vec)
+        return (mean_spatial_correlation,mean_covariance)
 
     def investigate_correlation(self, points_to_be_calculated: list=breakpoints):
         korelacje = []
+        kowariancje = []
         odleglosci = []
         poczatek = 0
         for i in points_to_be_calculated:
@@ -223,8 +259,9 @@ class ModelClass:
             # print(tmp)
             poczatek = i
             odleglosci.append(koniec)
-            korelacje.append(tmp)
-        return korelacje
+            korelacje.append(tmp[0])
+            kowariancje.append(tmp[1])
+        return korelacje,kowariancje
 
     def check_if_interrupted(self):
         print("Jezeli chcesz zakonczyc zbieranie danych przytrzymaj <p>")
