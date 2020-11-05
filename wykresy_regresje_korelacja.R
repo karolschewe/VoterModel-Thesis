@@ -2,7 +2,7 @@ this.dir <- dirname(parent.frame(2)$ofile)
 setwd(this.dir)
 
 
-seqq<- c(0.02)
+seqq<- c(0.02,0)
 
 
 processFile = function(filepath) {
@@ -25,7 +25,7 @@ df<-expand.grid(d = seqq,factor = d_factor, sigma = NA)
 
 folder<-"2020-08-21"
 noise<-"noise_change"
-datacollected<-"data_test_corr"
+datacollected<-"do_wykresow_magisterka"
 
 
 km<-c(10^1,10^1.2,10^1.4,10^1.6,10^1.8,10^2,10^2.2,10^2.4,10^2.6,10^2.8)

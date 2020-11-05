@@ -20,35 +20,37 @@ processFile = function(filepath) {
 # par(mfrow=c(3,3))
 
 seqq<- 0.01
-d_factor<-100
-png("test.png")
-par(mfrow=c(2,2))
+d_factor<-38
+
+par(mfrow=c(2,2), mar = c(5, 4, 6, 2) + 0.1)
 for(i in seqq )
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/opinions_",i,".txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/opinions_",i,".txt"))
   # print(first.timeseries)
-  hist(first.timeseries, main = paste0("opinions in model D = ", i,"\n factor = ", d_factor),breaks = 25, xlab = 'CONSERVATISM SUPPORT')
+  hist(first.timeseries, main = paste0("\n\n\n\nRozk³ad opinii\n po zakoñczeniu iteracji modelu"),breaks = 25, xlab = 'CONSERVATISM SUPPORT',cex.main = 1)
 }
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/d_",i,"_sdev.txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/d_",i,"_sdev.txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("std. deviation in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="sigma")
-}
-
-
-for(i in seqq)
-{
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/mean_overall_",i,".txt"))
-  # print(first.timeseries)
-  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
+  plot(first.timeseries, main = paste0("\n\n\n\nOdchylenie standardowe"), xlab = 'MODEL TIMESTEPS',ylab="sigma",cex.main = 1)
 }
 
 
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("data/d_",i,"_scale_",d_factor,"/means_",i,".txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/mean_overall_",i,".txt"))
   # print(first.timeseries)
-  plot(first.timeseries, main = paste0("mean opinion in Poland in time D = ", i,"\n on gmina level factor = ", d_factor), xlab = 'SYNCHRONOUS MODEL TIMESTEPS',ylab="mean")
+  plot(first.timeseries, main = paste0("\n\nProcentowe poparcie konserwatyzmu"), xlab = 'MODEL TIMESTEPS',ylab="mean",cex.main = 1)
 }
-dev.off()
+
+
+for(i in seqq)
+{
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/means_",i,".txt"))
+  # print(first.timeseries)
+  plot(first.timeseries, main = paste0("\n\nŒrednie poparcie konserwatyzmu\n na poziomie gminy"), xlab = 'MODEL TIMESTEPS',ylab="mean",cex.main = 1)
+}
+
+
+title(paste0("W³aœciwoœci modelu dla parametrów\n D = ",seqq," alfa = 0.5, skala zminiejszenia 1:",d_factor), line = -3, outer = TRUE, cex.main = 1.4)

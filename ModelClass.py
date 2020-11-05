@@ -44,7 +44,8 @@ class ModelClass:
             for iterator in range(len(vector_of_workplaces)):
                 self.agents.append(Agent(vector_of_opinions[iterator], i.id, vector_of_workplaces[iterator]))
                 i.residents_indices.append(assigned_agents)
-                self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
+                if vector_of_workplaces[iterator] in self.gminas.keys():
+                    self.gminas[vector_of_workplaces[iterator]].workers_indices.append(assigned_agents)
                 assigned_agents = assigned_agents + 1
 
     def __init__(self,initial_state_filename: str = "gminas_pops_python2005.csv", D = 0.1, alfa =0.5,downscale_factor = 38,
@@ -194,29 +195,33 @@ class ModelClass:
         return mean_spatial_correlation
 
     def alternative_correlation(self, lower_bound_km, upper_bound_km):
-        mean_opinion = self.mean_conservatism_in_gminas
-        opinion_variance = self.std_dev**2
-        correlations_vec = []
+        mean_opinion_sq = self.mean_conservatism_in_gminas ** 2
+        sigma_kwadrat = self.std_dev ** 2
+        opinion_product_vec = []
         for i in self.gminas.values():
+            # wyznaczam gminy wewnatrz zadanych granic - na tych bedziemy liczyc korelacje
             if i.id in self.d_matr.columns:
-                neighbours = list(self.d_matr.loc[(self.d_matr[i.id] < upper_bound_km) & (self.d_matr[i.id] > lower_bound_km)].index)
+                neighbours = list(
+                    self.d_matr.loc[(self.d_matr[i.id] < upper_bound_km) & (self.d_matr[i.id] > lower_bound_km)].index)
                 # print(neighbours)
             else:
                 continue
             if len(neighbours) > 0:
                 my_opinion = i.conservatism_pecentage
-                product_vec = []
+                # sredni iloczyn poparc dla i-tej gminy i wyznaczonych gmin z zadanego obszaru
                 for teryt in neighbours:
                     if teryt in self.gminas.keys():
-                        my_diff = my_opinion - mean_opinion
-                        his_opinion = self.gminas[teryt].conservatism_pecentage
-                        his_diff = his_opinion - mean_opinion
-                        product = my_diff * his_diff
-                        product_vec.append(product)
-                correlation = (sum(product_vec)/len(neighbours))/opinion_variance
-                correlations_vec.append(correlation)
-        mean_correlation = mean(correlations_vec)
-        return mean_correlation
+                        tmp = my_opinion * self.gminas[teryt].conservatism_pecentage
+                        opinion_product_vec.append(tmp)
+
+        mean_in_area = mean(opinion_product_vec)
+        mean_diff = mean_in_area - mean_opinion_sq
+        correlation = mean_diff / sigma_kwadrat
+
+
+
+
+        return correlation
 
 
     def investigate_correlation(self,points_to_be_calculated = (10**1,10**1.2,10**1.4,10**1.6,10**1.8,10**2,10**2.2,10**2.4,10**2.6,10**2.8), new = False):
