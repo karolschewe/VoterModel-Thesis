@@ -5,7 +5,7 @@ from pathlib import Path
 
 cwd = os.getcwd()
 d_values = [0.0001]
-downscale_factors = [5]
+downscale_factors = [6]
 alphas = [0.5]
 liczba_iteracji = 100
 noise_types = ["other"]
@@ -37,7 +37,7 @@ for noise in noise_types:
                     srednie.append(model.overall_conservatism_support)
                     srednie_na_poziomie_gminy.append(model.mean_conservatism_in_gminas)
                     stop2 = time.time()
-                    if g % 20 == 1:
+                    if g % 30 == 1:
                         print("Iteracja modelu:" + str(g))
                         print("Czas wykonania 1 iteracji:")
                         print(stop2 - start2)

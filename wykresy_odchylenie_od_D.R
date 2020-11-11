@@ -19,19 +19,19 @@ processFile = function(filepath) {
 
 # par(mfrow=c(3,3))
 
-seqq<- 0.01
-d_factor<-38
+seqq<- "0.0001"
+d_factor<-6
 
 par(mfrow=c(2,2), mar = c(5, 4, 6, 2) + 0.1)
 for(i in seqq )
 {
-  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/opinions_",i,".txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka_factors/d_",i,"_scale_",d_factor,"noise_change_a0.5/opinions_",i,".txt"))
   # print(first.timeseries)
   hist(first.timeseries, main = paste0("\n\n\n\nRozk³ad opinii\n po zakoñczeniu iteracji modelu"),breaks = 25, xlab = 'CONSERVATISM SUPPORT',cex.main = 1)
 }
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/d_",i,"_sdev.txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka_factors/d_",i,"_scale_",d_factor,"noise_change_a0.5/d_",i,"_sdev.txt"))
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("\n\n\n\nOdchylenie standardowe"), xlab = 'MODEL TIMESTEPS',ylab="sigma",cex.main = 1)
 }
@@ -39,7 +39,7 @@ for(i in seqq)
 
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/mean_overall_",i,".txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka_factors/d_",i,"_scale_",d_factor,"noise_change_a0.5/mean_overall_",i,".txt"))
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("\n\nProcentowe poparcie konserwatyzmu"), xlab = 'MODEL TIMESTEPS',ylab="mean",cex.main = 1)
 }
@@ -47,7 +47,7 @@ for(i in seqq)
 
 for(i in seqq)
 {
-  first.timeseries<-processFile(paste0("do_wykresow_magisterka/d_",i,"_scale_",d_factor,"noise_change/means_",i,".txt"))
+  first.timeseries<-processFile(paste0("do_wykresow_magisterka_factors/d_",i,"_scale_",d_factor,"noise_change_a0.5/means_",i,".txt"))
   # print(first.timeseries)
   plot(first.timeseries, main = paste0("\n\nŒrednie poparcie konserwatyzmu\n na poziomie gminy"), xlab = 'MODEL TIMESTEPS',ylab="mean",cex.main = 1)
 }
